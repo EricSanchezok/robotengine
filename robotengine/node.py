@@ -1,6 +1,7 @@
 from enum import Enum
 from typing import List
 from .tools import warning, error
+from .signal import Signal
 class ProcessMode(Enum):
     PAUSABLE = 0
     WHEN_PAUSED = 1
@@ -9,7 +10,7 @@ class ProcessMode(Enum):
 
 class Node:
     from .input import InputEvent
-
+    
     def __init__(self, name="Node"):
         self.name = name         # 节点名称
         self._children = []       # 子节点列表
@@ -23,6 +24,9 @@ class Node:
         self.input: Input = None
 
         self.process_mode = ProcessMode.PAUSABLE
+
+        # 信号
+        self.ready = Signal()
 
     def add_child(self, child_node):
         if child_node._parent is not None:
@@ -43,14 +47,21 @@ class Node:
         else:
             warning(f"{self.name}：{child_node.name} 并未被找到，未执行移除操作")
 
-    def _update(self) -> None:
+    def _update(self, delta) -> None:
+        pass
+
+    def _timer(self, delta) -> None:
         pass
 
     def _init(self) -> None:
         pass
-
+    
     def _ready(self) -> None:
         pass
+
+    def _ready_execute(self) -> None:
+        self._ready()
+        self.ready.emit()
 
     def _process(self, delta) -> None:
         pass

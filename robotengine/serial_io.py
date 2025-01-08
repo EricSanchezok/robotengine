@@ -22,7 +22,7 @@ class SerialIO(Node):
         if self.device is None:
             warning(f"节点 {self.name} 初始化时未检测到 {self.device_type} 设备，将在内部更新中继续尝试")
 
-    def _update(self) -> None:
+    def _update(self, delta) -> None:
         if self.device is None:
             self._initialize()
             return

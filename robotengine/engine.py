@@ -13,9 +13,7 @@ class Engine:
     def __init__(self, root: Node, frequency=30, input_devices=[]):
         self.root = root  # 根节点
         self._frequency = frequency  # 每秒运行的帧数
-        self._interval = 1 / frequency  # 每次循环间隔时间
 
-        self._running = False  # 引擎运行状态
         self.paused = False  # 引擎暂停状态
         self._frame = 0  # 帧数计数器
 
@@ -34,6 +32,9 @@ class Engine:
         self._update_thread = threading.Thread(target=self._update, daemon=True)
         self._update_thread.start()
 
+        self._timer_thread = threading.Thread(target=self._timer, daemon=True)
+        self._timer_thread.start()
+
     def initialize(self):
         """从叶子节点到根节点依次调用 _init 和 _ready"""
         from .node import Node
@@ -49,23 +50,33 @@ class Engine:
         def ready_recursive(node: Node):
             for child in node.get_children():
                 ready_recursive(child)  # 子节点准备完成
-            node._ready()  # 当前节点准备完成
+            node._ready_execute()
 
         init_recursive(self.root)
         ready_recursive(self.root)
 
-    def _update(self):
-        """每帧调用 _update，从根节点递归调用"""
+    def _process_update(self, delta):
         from.node import Node
-        def update_recursive(node: Node):
+        def update_recursive(node: Node, delta):
             for child in node.get_children():
-                update_recursive(child)  # 先更新子节点
-            node._update()  # 当前节点的更新逻辑
+                update_recursive(child, delta)
+            node._update(delta)
+        update_recursive(self.root, delta)
 
-        while not self._shutdown.is_set():
-            update_recursive(self.root)
-            time.sleep(0.2)
+    def _update(self):
+        self.run_loop(1, precise_control=False, process_func=self._process_update)
 
+    def _process_timer(self, delta):
+        from.node import Node
+        def timer_recursive(node: Node, delta):
+            for child in node.get_children():
+                timer_recursive(child, delta)  # 先更新子节点
+            node._timer(delta)  # 当前节点的更新逻辑
+        timer_recursive(self.root, delta)
+
+    def _timer(self):
+        self.run_loop(30, precise_control=False, process_func=self._process_timer)
+            
     def _input(self):
         from .node import Node
         from .input import InputEvent
@@ -82,7 +93,6 @@ class Engine:
                     input_recursive(self.root, _gamepad_event)
 
     def _process(self, delta):
-        """每帧调用 _process，从根节点递归调用"""
         from .node import Node
         def process_recursive(node: Node):
             if self.paused:
@@ -92,52 +102,52 @@ class Engine:
                 if node.process_mode == ProcessMode.PAUSABLE or node.process_mode == ProcessMode.ALWAYS:
                     node._process(delta)
             for child in node.get_children():
-                process_recursive(child)  # 子节点的处理逻辑
+                process_recursive(child)
 
         process_recursive(self.root)
 
     def run(self):
-        """主循环"""
-        self._running = True
-        self._frame = 0
-        threshold = 0.03
-
-        # 记录循环开始的时间
-        last_time = time.perf_counter()   
-        next_time = last_time  # 记录下一次期望的执行时间
-
-        first_frame = True 
-
-        while self._running:
-            current_time = time.perf_counter()  # 当前帧开始的时间
-            delta = current_time - last_time  # 计算本帧与上一帧的时间差
-            last_time = current_time  # 更新 last_time 为当前时间
-            
-            if not first_frame:
-                self._process(delta)
-                self._frame += 1
-            else:
-                first_frame = False  # 标记为非第一帧
-
-            next_time += self._interval
-            sleep_time = next_time - time.perf_counter()
-
-            if sleep_time > threshold:
-                time.sleep(sleep_time - threshold)  # 休眠大部分时间，留下一小部分时间进行精确控制
-
-            # 空循环，等待剩余的部分来精确定时
-            while time.perf_counter() < next_time:
-                pass  # 等待直到达到下一个预期时间
-
-            # 如果任务执行时间超过了间隔，跳过休眠
-            if sleep_time <= 0:
-                print(f"WARNING: Skipping sleep. Frame took too long. Delta: {delta:.5f}s")
+        self.run_loop(self._frequency, precise_control=True, process_func=self._process, warn=True)
 
     def stop(self):
-        """停止引擎"""
         self._shutdown.set()
-        self._running = False
-        
+
+    def run_loop(self, frequency, precise_control=False, process_func=None, warn=False):
+        interval = 1.0 / frequency
+        threshold = 0.03
+
+        last_time = time.perf_counter()
+        next_time = last_time
+        first_frame = True
+
+        while not self._shutdown.is_set():
+            current_time = time.perf_counter()
+            delta = current_time - last_time
+            last_time = current_time
+
+            if not first_frame and process_func:
+                process_func(delta)
+            else:
+                first_frame = False
+
+            next_time += interval
+            sleep_time = next_time - time.perf_counter()
+
+            if precise_control:
+                if sleep_time > threshold:
+                    time.sleep(sleep_time - threshold)
+
+                while time.perf_counter() < next_time:
+                    pass
+
+            else:
+                if sleep_time > 0:
+                    time.sleep(max(0, sleep_time))
+
+            if sleep_time <= 0 and warn:
+                print(f"WARNING: Skipping sleep. Frame took too long. Delta: {delta:.5f}s")
+
+            
     def get_frame(self) -> int:
         """获取当前帧数"""
         return self._frame
