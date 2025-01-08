@@ -107,12 +107,12 @@ class Engine:
         process_recursive(self.root)
 
     def run(self):
-        self.run_loop(self._frequency, precise_control=True, process_func=self._process, warn=True)
+        self.run_loop(self._frequency, precise_control=True, process_func=self._process, main_loop=True)
 
     def stop(self):
         self._shutdown.set()
 
-    def run_loop(self, frequency, precise_control=False, process_func=None, warn=False):
+    def run_loop(self, frequency, precise_control=False, process_func=None, main_loop=False):
         interval = 1.0 / frequency
         threshold = 0.03
 
@@ -127,6 +127,8 @@ class Engine:
 
             if not first_frame and process_func:
                 process_func(delta)
+                if main_loop:
+                    self._frame += 1
             else:
                 first_frame = False
 
@@ -144,7 +146,7 @@ class Engine:
                 if sleep_time > 0:
                     time.sleep(max(0, sleep_time))
 
-            if sleep_time <= 0 and warn:
+            if sleep_time <= 0 and main_loop:
                 print(f"WARNING: Skipping sleep. Frame took too long. Delta: {delta:.5f}s")
 
             
