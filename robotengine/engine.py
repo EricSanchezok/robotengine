@@ -1,16 +1,15 @@
-
-from input import GamepadListener, Input
 import threading
 import time
 from enum import Enum
+from .input import Input, GamepadListener
+from .node import ProcessMode
 
+class InputDevice(Enum):
+    KEYBOARD = 0
+    MOUSE = 1
+    GAMEPAD = 2
 class Engine:
-    from node import Node
-    class InputDevice(Enum):
-        KEYBOARD = 0
-        MOUSE = 1
-        GAMEPAD = 2
-
+    from .node import Node
     def __init__(self, root: Node, frequency=30, input_devices=[]):
         self.root = root  # 根节点
         self._frequency = frequency  # 每秒运行的帧数
@@ -26,7 +25,7 @@ class Engine:
 
         self._shutdown = threading.Event()
         if input_devices:
-            if Engine.InputDevice.GAMEPAD in input_devices:
+            if InputDevice.GAMEPAD in input_devices:
                 self._gamepad_listener = GamepadListener()
 
             self._input_thread = threading.Thread(target=self._input, daemon=True)
@@ -34,7 +33,7 @@ class Engine:
 
     def initialize(self):
         """从叶子节点到根节点依次调用 _init 和 _ready"""
-        from node import Node
+        from .node import Node
         def init_recursive(node: Node):
             for child in node.get_children():
                 init_recursive(child)  # 先初始化子节点
@@ -53,8 +52,8 @@ class Engine:
         ready_recursive(self.root)
 
     def _input(self):
-        from node import Node
-        from input import InputEvent
+        from .node import Node
+        from .input import InputEvent
         def input_recursive(node: Node, event: InputEvent):
             for child in node.get_children():
                 input_recursive(child, event)  # 先处理子节点
@@ -62,20 +61,20 @@ class Engine:
 
         while not self._shutdown.is_set():
             if self._gamepad_listener:
-                for _gamepad_event in self._input_listener.listen():
+                for _gamepad_event in self._gamepad_listener.listen():
                     self.input.update(_gamepad_event)
 
                     input_recursive(self.root, _gamepad_event)
 
     def _process(self, delta):
         """每帧调用 _process，从根节点递归调用"""
-        from node import Node
+        from .node import Node
         def process_recursive(node: Node):
             if self.paused:
-                if node.process_mode == Node.ProcessMode.WHEN_PAUSED or node.process_mode == Node.ProcessMode.ALWAYS:
+                if node.process_mode == ProcessMode.WHEN_PAUSED or node.process_mode == ProcessMode.ALWAYS:
                     node._process(delta)
             else:
-                if node.process_mode == Node.ProcessMode.PAUSABLE or node.process_mode == Node.ProcessMode.ALWAYS:
+                if node.process_mode == ProcessMode.PAUSABLE or node.process_mode == ProcessMode.ALWAYS:
                     node._process(delta)
             for child in node.get_children():
                 process_recursive(child)  # 子节点的处理逻辑
@@ -130,7 +129,7 @@ class Engine:
 
     def print_tree(self):
         """打印节点树"""
-        from node import Node
+        from .node import Node
         def print_recursive(node: Node, prefix="", is_last=False, is_root=False):
             if is_root:
                 print(f"{node}")  # 根节点

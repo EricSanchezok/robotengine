@@ -140,7 +140,9 @@ class GamepadListener():
     def __init__(self):
         self.devices = inputs.devices.gamepads
         if not self.devices:
-            raise ValueError("未检测到手柄连接")
+            raise ValueError("您开启了 Gamepad 输入检测，但是未检测到 Gamepad 设备")
+        else:
+            print(f"您开启了 Gamepad 输入检测，检测到 {len(self.devices)} 个 Gamepad 设备, 使用 {self.devices[0].name}")
 
     def listen(self) -> InputEvent: # type: ignore
         """监听手柄输入并生成事件"""

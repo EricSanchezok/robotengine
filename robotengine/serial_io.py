@@ -1,16 +1,16 @@
-from node import Node
+from .node import Node
 import serial.tools.list_ports
 import serial
 from enum import Enum
 import random
-import tools
+from .tools import hex_to_str
 
 class DeviceType(Enum):
     STM32F407 = 0
     ARDUINO_MEGA2560 = 1
 
-class SerialInterface(Node):
-    def __init__(self, name="SerialInterface", device_type=DeviceType.STM32F407, baudrate=115200, timeout=1.0):
+class SerialIO(Node):
+    def __init__(self, name="SerialIO", device_type=DeviceType.STM32F407, baudrate=115200, timeout=1.0):
         super().__init__(name)
         self.device_type = device_type
         self.device = None
@@ -20,6 +20,10 @@ class SerialInterface(Node):
 
     def _ready(self) -> None:
         self.initialize()
+        if self.device is None:
+            print(f"{self.name} Ready 时未检测到 {self.device_type} 设备")
+        else:
+            print(f"{self.name} Ready 时检测到 {self.device_type} 设备")
 
     def _process(self, delta: float) -> None:
         if self.device is None:
@@ -29,10 +33,10 @@ class SerialInterface(Node):
         # if self.serial.in_waiting >= 10:
         #     data = self.serial.read(10)
         #     print("Receiving:")
-        #     tools.print_hex(data)
+        #     print(hex_to_str(data))
 
         # 生成32个随机字节（0-255之间的整数）
-        random_bytes = bytes([random.randint(0, 255) for _ in range(8)])
+        random_bytes = bytes([random.randint(0, 255) for _ in range(6)])
         
         message = self.add_header(random_bytes)
         message = self.add_check_sum(message)
@@ -40,7 +44,7 @@ class SerialInterface(Node):
         self.transmit(message)
 
         print("Transmitting:")
-        tools.print_hex(message)
+        print(hex_to_str(message))
         
     def initialize(self):
         self.device = self._find_device()
@@ -58,7 +62,6 @@ class SerialInterface(Node):
         ports = serial.tools.list_ports.comports()
         for port in ports:
             if port.vid == target_vid and port.pid == target_pid:
-                print(f"Found {self.device_type} device: {port.device}")
                 return port.device
         return None
     
@@ -67,9 +70,12 @@ class SerialInterface(Node):
         return data + bytes([check_sum])
     
     def add_header(self, data: bytes) -> bytes:
-        return bytes([0x3E]) + data
+        return bytes([0x0D, 0x0A]) + data
     
     def transmit(self, data: bytes):
+        if self.serial is None:
+            print(f"{self.name} 串口未初始化，无法发送数据")
+            return
         data = self.add_header(data)
         data = self.add_check_sum(data)
         self.serial.write(data)

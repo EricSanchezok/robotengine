@@ -1,14 +1,14 @@
 from enum import Enum
 from typing import List
 
-class Node:
-    class ProcessMode(Enum):
-        PAUSABLE = 0
-        WHEN_PAUSED = 1
-        ALWAYS = 2
-        DISABLED = 3
+class ProcessMode(Enum):
+    PAUSABLE = 0
+    WHEN_PAUSED = 1
+    ALWAYS = 2
+    DISABLED = 3
 
-    from input import InputEvent
+class Node:
+    from .input import InputEvent
 
     def __init__(self, name="Node"):
         self.name = name         # 节点名称
@@ -17,12 +17,12 @@ class Node:
         self.owner = None
 
         # 全局属性
-        from engine import Engine
-        from input import Input
+        from .engine import Engine
+        from .input import Input
         self.engine: Engine = None
         self.input: Input = None
 
-        self.process_mode = Node.ProcessMode.PAUSABLE
+        self.process_mode = ProcessMode.PAUSABLE
 
     def add_child(self, child_node):
         if child_node._parent is not None:
