@@ -2,10 +2,10 @@ from setuptools import setup, find_packages
 
 setup(
     name="robotengine",
-    version="0.1",
+    version="0.11",
     packages=find_packages(),  # 自动发现所有的包和子包
     install_requires=[
-        "serial>=0.0.97",
+        "pyserial>=0.5",
         "inputs>=0.5"
     ],
     long_description=open('README.md').read(),

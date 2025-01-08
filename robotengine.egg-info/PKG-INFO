@@ -1,0 +1,14 @@
+Metadata-Version: 2.1
+Name: robotengine
+Version: 0.11
+Summary: A easy-to-use robot framework
+Home-page: https://github.com/EricSanchezok/robotengine
+Author: EricSanchez
+Author-email: niexiaohangeric@163.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: pyserial>=0.5
+Requires-Dist: inputs>=0.5
