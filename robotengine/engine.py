@@ -31,6 +31,9 @@ class Engine:
             self._input_thread = threading.Thread(target=self._input, daemon=True)
             self._input_thread.start()
 
+        self._update_thread = threading.Thread(target=self._update, daemon=True)
+        self._update_thread.start()
+
     def initialize(self):
         """从叶子节点到根节点依次调用 _init 和 _ready"""
         from .node import Node
@@ -50,6 +53,18 @@ class Engine:
 
         init_recursive(self.root)
         ready_recursive(self.root)
+
+    def _update(self):
+        """每帧调用 _update，从根节点递归调用"""
+        from.node import Node
+        def update_recursive(node: Node):
+            for child in node.get_children():
+                update_recursive(child)  # 先更新子节点
+            node._update()  # 当前节点的更新逻辑
+
+        while not self._shutdown.is_set():
+            update_recursive(self.root)
+            time.sleep(0.2)
 
     def _input(self):
         from .node import Node

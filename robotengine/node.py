@@ -1,6 +1,6 @@
 from enum import Enum
 from typing import List
-
+from .tools import warning, error
 class ProcessMode(Enum):
     PAUSABLE = 0
     WHEN_PAUSED = 1
@@ -26,7 +26,8 @@ class Node:
 
     def add_child(self, child_node):
         if child_node._parent is not None:
-            raise ValueError(f"{child_node.name} already has a parent!")
+            warning(f"{self.name}：{child_node.name} 已经有父节点！")
+            return
         child_node._parent = self  # 设置子节点的 _parent 属性
         if self.owner is not None:
             child_node.owner = self.owner
@@ -34,15 +35,16 @@ class Node:
             child_node.owner = self
 
         self._children.append(child_node)
-        # print(f"{self.name}: Added child {child_node.name}")
 
     def remove_child(self, child_node):
         if child_node in self._children:
             self._children.remove(child_node)
             child_node._parent = None  # 解除 _parent 绑定
-            # print(f"{self.name}: Removed child {child_node.name}")
         else:
-            raise ValueError(f"{child_node.name} is not a child of {self.name}!")
+            warning(f"{self.name}：{child_node.name} 并未被找到，未执行移除操作")
+
+    def _update(self) -> None:
+        pass
 
     def _init(self) -> None:
         pass

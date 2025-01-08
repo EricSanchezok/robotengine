@@ -3,7 +3,7 @@ import serial.tools.list_ports
 import serial
 from enum import Enum
 import random
-from .tools import hex_to_str
+from .tools import hex_to_str, warning, error
 
 class DeviceType(Enum):
     STM32F407 = 0
@@ -18,35 +18,16 @@ class SerialIO(Node):
         self.baudrate = baudrate
         self.timeout = timeout
 
-    def _ready(self) -> None:
-        self.initialize()
+        self._initialize()
         if self.device is None:
-            print(f"{self.name} Ready 时未检测到 {self.device_type} 设备")
-        else:
-            print(f"{self.name} Ready 时检测到 {self.device_type} 设备")
+            warning(f"节点 {self.name} 初始化时未检测到 {self.device_type} 设备，将在内部更新中继续尝试")
 
-    def _process(self, delta: float) -> None:
+    def _update(self) -> None:
         if self.device is None:
-            self.initialize()
+            self._initialize()
             return
         
-        # if self.serial.in_waiting >= 10:
-        #     data = self.serial.read(10)
-        #     print("Receiving:")
-        #     print(hex_to_str(data))
-
-        # 生成32个随机字节（0-255之间的整数）
-        random_bytes = bytes([random.randint(0, 255) for _ in range(6)])
-        
-        message = self.add_header(random_bytes)
-        message = self.add_check_sum(message)
-
-        self.transmit(message)
-
-        print("Transmitting:")
-        print(hex_to_str(message))
-        
-    def initialize(self):
+    def _initialize(self):
         self.device = self._find_device()
         if self.device:
             self.serial = serial.Serial(self.device, self.baudrate, timeout=self.timeout)
@@ -65,16 +46,19 @@ class SerialIO(Node):
                 return port.device
         return None
     
-    def add_check_sum(self, data: bytes) -> bytes:
+    def _add_check_sum(self, data: bytes) -> bytes:
         check_sum = sum(data) & 0xFF
         return data + bytes([check_sum])
     
-    def add_header(self, data: bytes) -> bytes:
+    def _add_header(self, data: bytes) -> bytes:
         return bytes([0x0D, 0x0A]) + data
+    
+    def random_bytes(self, length: int) -> bytes:
+        return bytes([random.randint(0, 255) for _ in range(length)])
     
     def transmit(self, data: bytes):
         if self.serial is None:
-            print(f"{self.name} 串口未初始化，无法发送数据")
+            warning(f"节点 {self.name} 串口未初始化，无法发送数据")
             return
         data = self.add_header(data)
         data = self.add_check_sum(data)

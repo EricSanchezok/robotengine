@@ -1,5 +1,6 @@
 from enum import Enum
 import inputs  # 假设你使用的是这个库来读取输入设备
+from .tools import error, warning
 
 # 定义 JoyButton 和 JoyAxis 枚举
 class JoyButton(Enum):
@@ -140,9 +141,9 @@ class GamepadListener():
     def __init__(self):
         self.devices = inputs.devices.gamepads
         if not self.devices:
-            raise ValueError("您开启了 Gamepad 输入检测，但是未检测到 Gamepad 设备")
+            error("您开启了 Gamepad 输入检测，但是未检测到 Gamepad 设备，请连接 Gamepad 设备后重试")
         else:
-            print(f"您开启了 Gamepad 输入检测，检测到 {len(self.devices)} 个 Gamepad 设备, 使用 {self.devices[0].name}")
+            warning(f"您开启了 Gamepad 输入检测，检测到 {len(self.devices)} 个 Gamepad 设备, 将使用第一个设备 {self.devices[0].name} 进行输入检测")
 
     def listen(self) -> InputEvent: # type: ignore
         """监听手柄输入并生成事件"""
@@ -202,7 +203,7 @@ class Input:
 
     def get_axis(self, negative_action: str, positive_action: str) -> float:
         if negative_action not in self.axis_states or positive_action not in self.axis_states:
-            raise ValueError("Invalid axis actions")
+            raise ValueError(f"无效的 axis 动作: {negative_action}, {positive_action}")
         negative = self._axis_states[negative_action]
         positive = self._axis_states[positive_action]
 
@@ -212,19 +213,19 @@ class Input:
         if action in self._axis_states:
             return self._axis_states[action]
         else:
-            raise ValueError("Invalid action")
+            raise ValueError(f"无效的动作: {action}")
     
     def is_action_pressed(self, action: str) -> bool:
         if action in self._button_states:
             return self._button_states[action]
         else:
-            raise ValueError("Invalid action")
+            raise ValueError(f"无效的动作: {action}")
         
     def is_action_released(self, action: str) -> bool:
         if action in self._button_states:
             return not self._button_states[action]
         else:
-            raise ValueError("Invalid action")
+            raise ValueError(f"无效的动作: {action}")
     
     def is_anything_pressed(self) -> bool:
         for value in self._button_states.values():

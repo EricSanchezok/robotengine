@@ -1,5 +1,6 @@
 from .node import Node
 import time
+from .tools import error
 
 class StateMachine(Node):
     KEEP_CURRENT = -1
@@ -26,7 +27,7 @@ class StateMachine(Node):
             self.state_time = 0.0
 
             if time.time() - start_transition_time > 1.0:
-                raise TimeoutError(f"{self.owner.name} state_machine {self.current_state} timeout")
+                error(f"{self.owner.name} state_machine {self.current_state} transition timeout")
 
         self.owner.tick(self.current_state, delta)
         self.state_time += delta
