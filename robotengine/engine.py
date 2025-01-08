@@ -1,11 +1,17 @@
 
-from input import InputListener, Input
+from input import GamepadListener, Input
 import threading
 import time
+from enum import Enum
 
 class Engine:
     from node import Node
-    def __init__(self, root: Node, frequency=30, input=False):
+    class InputDevice(Enum):
+        KEYBOARD = 0
+        MOUSE = 1
+        GAMEPAD = 2
+
+    def __init__(self, root: Node, frequency=30, input_devices=[]):
         self.root = root  # 根节点
         self._frequency = frequency  # 每秒运行的帧数
         self._interval = 1 / frequency  # 每次循环间隔时间
@@ -19,8 +25,10 @@ class Engine:
         self.initialize()  # 初始化引擎
 
         self._shutdown = threading.Event()
-        if input:
-            self._input_listener = InputListener()
+        if input_devices:
+            if Engine.InputDevice.GAMEPAD in input_devices:
+                self._gamepad_listener = GamepadListener()
+
             self._input_thread = threading.Thread(target=self._input, daemon=True)
             self._input_thread.start()
 
@@ -53,10 +61,11 @@ class Engine:
             node._input(event)  # 当前节点的处理逻辑
 
         while not self._shutdown.is_set():
-            for event in self._input_listener.listen():
-                self.input.update(event)
+            if self._gamepad_listener:
+                for _gamepad_event in self._input_listener.listen():
+                    self.input.update(_gamepad_event)
 
-                input_recursive(self.root, event)
+                    input_recursive(self.root, _gamepad_event)
 
     def _process(self, delta):
         """每帧调用 _process，从根节点递归调用"""

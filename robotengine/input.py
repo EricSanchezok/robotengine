@@ -136,7 +136,7 @@ class InputEventJoypadAxis(InputEvent):
             return self.axis_value
         return 0.0
 
-class InputListener():
+class GamepadListener():
     def __init__(self):
         self.devices = inputs.devices.gamepads
         if not self.devices:

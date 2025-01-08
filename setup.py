@@ -5,14 +5,15 @@ setup(
     version="0.1",
     packages=find_packages(),  # 自动发现所有的包和子包
     install_requires=[
-        # 如果有依赖库，列在这里
+        "serial>=0.0.97",
+        "inputs>=0.5"
     ],
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    author="Your Name",
-    author_email="your.email@example.com",
-    description="A Python package with multiple modules",
-    url="https://github.com/yourusername/my_package",
+    author="EricSanchez",
+    author_email="niexiaohangeric@163.com",
+    description="A easy-to-use robot framework",
+    url="https://github.com/EricSanchezok/robotengine",
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
