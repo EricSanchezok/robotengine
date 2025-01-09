@@ -3,7 +3,7 @@ import serial.tools.list_ports
 import serial
 from enum import Enum
 import random
-from .tools import hex_to_str, warning, error
+from robotengine.tools import hex2str, warning, error
 import zlib
 
 class DeviceType(Enum):
@@ -18,6 +18,15 @@ class CheckSumType(Enum):
     XOR16 = 4
     CRC8 = 5
     CRC16 = 6
+
+checksum_length_map = {
+        CheckSumType.SUM8: 1,
+        CheckSumType.SUM16: 2,
+        CheckSumType.XOR8: 1,
+        CheckSumType.XOR16: 2,
+        CheckSumType.CRC8: 1,
+        CheckSumType.CRC16: 2
+    }
 
 class SerialIO(Node):
     def __init__(self, name="SerialIO", device_type=DeviceType.STM32F407, checksum_type=CheckSumType.NONE, header=[], baudrate=115200, timeout=1.0):
@@ -58,23 +67,23 @@ class SerialIO(Node):
                 return port.device
         return None
     
-    def _add_check_sum(self, data: bytes) -> bytes:
+    def _get_check_sum(self, data: bytes) -> bytes:
         if self.checksum_type == CheckSumType.SUM8:
             check_sum = sum(data) & 0xFF
-            return data + bytes([check_sum])
+            return bytes([check_sum])
         elif self.checksum_type == CheckSumType.SUM16:
             check_sum = sum(data) & 0xFFFF
-            return data + check_sum.to_bytes(2, byteorder='big')
+            return check_sum.to_bytes(2, byteorder='big')
         elif self.checksum_type == CheckSumType.XOR8:
             check_sum = 0
             for byte in data:
                 check_sum ^= byte
-            return data + bytes([check_sum])
+            return bytes([check_sum])
         elif self.checksum_type == CheckSumType.XOR16:
             check_sum = 0
             for byte in data:
                 check_sum ^= byte
-            return data + check_sum.to_bytes(2, byteorder='big')
+            return check_sum.to_bytes(2, byteorder='big')
         elif self.checksum_type == CheckSumType.CRC8:
             crc = 0x00
             polynomial = 0x07
@@ -86,7 +95,7 @@ class SerialIO(Node):
                     else:
                         crc <<= 1
                     crc &= 0xFF
-            return data + bytes([crc])
+            return bytes([crc])
         elif self.checksum_type == CheckSumType.CRC16:
             crc = 0xFFFF
             polynomial = 0x8005
@@ -97,7 +106,7 @@ class SerialIO(Node):
                         crc = (crc >> 1) ^ polynomial
                     else:
                         crc >>= 1  # 否则仅右移
-            return data + crc.to_bytes(2, byteorder='big')
+            return crc.to_bytes(2, byteorder='big')
         else:
             raise ValueError("无效的校验和类型")
             
@@ -115,7 +124,7 @@ class SerialIO(Node):
             warning(f"节点 {self.name} 串口未初始化，无法发送数据")
             return
         if self.checksum_type !=CheckSumType.NONE:
-            data = self._add_check_sum(data)
+            data += self._get_check_sum(data)
         if self.header:
             data = self._add_header(data)
         self.serial.write(data)
@@ -129,6 +138,18 @@ class SerialIO(Node):
             return self.serial.read(len)
         else:
             return None
+        
+    def check_sum(self, data: bytes) -> bool:
+        checksum_length = checksum_length_map.get(self.checksum_type)
+        if checksum_length is None:
+            raise ValueError("无效的校验和类型，无法进行校验")
+
+        data_to_check = data[len(self.header):-checksum_length]
+        expected_checksum = data[-checksum_length:]
+        calculated_checksum = self._get_check_sum(data_to_check)
+        # print(f"data: {hex2str(data)}")
+        # print(f"expected_checksum: {hex2str(expected_checksum)}, calculated_checksum: {hex2str(calculated_checksum)}")
+        return calculated_checksum == expected_checksum
 
     def __del__(self):
         if self.serial:

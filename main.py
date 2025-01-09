@@ -9,7 +9,7 @@ if __name__ == '__main__':
     robot = Robot()
     root.add_child(robot)
 
-    engine = Engine(root, frequency=1, input_devices=[])
+    engine = Engine(root, frequency=240, input_devices=[])
     engine.print_tree()
     engine.run()
 

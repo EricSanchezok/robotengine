@@ -1,31 +1,66 @@
+"""
+
+input 是 robotengine 中用于处理输入的模块。
+
+在引擎初始化时，会根据 input_devices 参数创建 Input 实例，并将其传递给所有节点。
+
+注意：在传递 input_devices 非空时，必须提前连接好相应的设备，否则程序会自动终止。
+
+在节点的构造中，可以使用 _input(event: InputEvent) 来以回调的方式处理输入事件，也可以使用 self.input 来显式的访问 Input 实例。
+
+"""
+
+
 from enum import Enum
-import inputs  # 假设你使用的是这个库来读取输入设备
-from .tools import error, warning
+import inputs
+from robotengine.tools import error, warning
 
 # 定义 JoyButton 和 JoyAxis 枚举
 class JoyButton(Enum):
+    """ 手柄按钮枚举，以下以 Xbox 手柄为例 """
     JOY_BUTTON_INVALID = -1
+    """ 无效按钮 """
     JOY_BUTTON_A = 0
+    """ A 按钮 """
     JOY_BUTTON_B = 1
+    """ B 按钮 """
     JOY_BUTTON_X = 2
+    """ X 按钮 """
     JOY_BUTTON_Y = 3
+    """ Y 按钮 """
     JOY_BUTTON_BACK = 4
+    """ BACK 按钮 """
     JOY_BUTTON_START = 5
+    """ START 按钮 """
     JOY_BUTTON_LEFT_STICK = 6
+    """ 左摇杆按钮 """
     JOY_BUTTON_RIGHT_STICK = 7
+    """ 右摇杆按钮 """
     JOY_BUTTON_LEFT_SHOULDER = 8
+    """ 左扳机按钮 """
     JOY_BUTTON_RIGHT_SHOULDER = 9
+    """ 右扳机按钮 """
 
 class JoyAxis(Enum):
+    """ 手柄轴枚举，以下以 Xbox 手柄为例 """
     JOY_AXIS_INVALID = -1
+    """ 无效轴 """
     JOY_AXIS_LEFT_X = 0
+    """ 左摇杆 X 轴 """
     JOY_AXIS_LEFT_Y = 1
+    """ 左摇杆 Y 轴 """
     JOY_AXIS_RIGHT_X = 2
+    """ 右摇杆 X 轴 """
     JOY_AXIS_RIGHT_Y = 3
+    """ 右摇杆 Y 轴 """
     JOY_AXIS_TRIGGER_LEFT = 4
+    """ 左扳机轴 """
     JOY_AXIS_TRIGGER_RIGHT = 5
+    """ 右扳机轴 """
     JOY_AXIS_DPAD_X = 6
+    """ D-Pad X 轴 """
     JOY_AXIS_DPAD_Y = 7
+    """ D-Pad Y 轴 """
 
 JOY_MAPPING = {
     "A": JoyButton.JOY_BUTTON_A,
@@ -48,6 +83,7 @@ JOY_MAPPING = {
     "DPAD_X": JoyAxis.JOY_AXIS_DPAD_X,
     "DPAD_Y": JoyAxis.JOY_AXIS_DPAD_Y
 }
+
 
 INPUTS_BUTTON_MAPPING = {
     "BTN_SOUTH": JoyButton.JOY_BUTTON_A,
@@ -91,51 +127,63 @@ INPUTS_AXIS_VALUE_MAPPING = {
 
 # 定义 InputEvent 类以及子类
 class InputEvent:
+    """ 输入事件基类 """
     def __init__(self):
         pass
 
     def get_action_strength(self, action: str) -> float:
-        """返回某个动作的强度"""
+        """ 返回某个动作的强度 """
         pass
 
     def is_action_pressed(self, action: str) -> bool:
-        """检查某个动作是否被按下"""
+        """ 检查某个动作是否被按下 """
         pass
 
     def is_action_released(self, action: str) -> bool:
-        """检查某个动作是否被释放"""
+        """ 检查某个动作是否被释放 """
         pass
 
 class InputEventJoypadButton(InputEvent):
+    """手柄按钮事件"""
     def __init__(self, button_index: JoyButton, pressed: bool):
-        self.button_index = button_index
-        self.pressed = pressed
-
-    def __repr__(self):
-        return f"JoypadButton({self.button_index}, {self.pressed})"
+        """ 初始化手柄按键事件 """
+        self.button_index: JoyButton = button_index
+        """ 当前按键索引 """
+        self.pressed: bool = pressed
+        """ 当前按键是否被按下 """
 
     def is_action_pressed(self, action: str) -> bool:
+        """ 检查当前事件是否是某个手柄按键被按下 """
         if JOY_MAPPING.get(action) == self.button_index and self.pressed:
             return True
         return False
 
     def is_action_released(self, action: str) -> bool:
+        """ 检查当前事件是否是某个手柄按键被释放 """
         if JOY_MAPPING.get(action) == self.button_index and not self.pressed:
             return True
         return False
+    
+    def __repr__(self):
+        return f"JoypadButton({self.button_index}, {self.pressed})"
 
 class InputEventJoypadAxis(InputEvent):
+    """手柄轴事件"""
     def __init__(self, axis: JoyAxis, axis_value: float):
-        self.axis = axis
-        self.axis_value = axis_value
-
-    def __repr__(self):
-        return f"JoypadAxis({self.axis}, {self.axis_value})"
+        """ 初始化手柄轴事件 """
+        self.axis: JoyAxis = axis
+        """ 当前轴索引 """
+        self.axis_value: float = axis_value
+        """ 当前轴值 """
 
     def get_action_strength(self, action: str) -> float:
+        """ 检查当前事件的某个轴值 """
         if JOY_MAPPING.get(action) == self.axis:
             return self.axis_value
         return 0.0
+    
+    def __repr__(self):
+        return f"JoypadAxis({self.axis}, {self.axis_value})"
 
 class GamepadListener():
     def __init__(self):

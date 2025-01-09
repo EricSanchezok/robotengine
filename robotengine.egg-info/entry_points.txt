@@ -1,0 +1,2 @@
+[console_scripts]
+robotengine = robotengine.cli:main

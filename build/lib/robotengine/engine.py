@@ -1,25 +1,59 @@
+""" 
+
+引擎是 robotengine 的核心部分，负责管理节点的初始化、运行和更新。
+
+Engine 同时还存储了一些全局变量，如帧数 frame 和时间戳 timestamp等。
+
+在 Node 类中可以通过使用 self.engine 来访问引擎。
+
+"""
 import threading
 import time
 from enum import Enum
-from .input import Input, GamepadListener
-from .node import ProcessMode
+from robotengine.input import Input, GamepadListener
+from robotengine.node import ProcessMode
+from robotengine.tools import warning, error
 
 class InputDevice(Enum):
+    """ 输入设备枚举 """
     KEYBOARD = 0
+    """ 键盘输入 """
     MOUSE = 1
+    """ 鼠标输入 """
     GAMEPAD = 2
-class Engine:
-    from .node import Node
-    def __init__(self, root: Node, frequency=30, input_devices=[]):
-        self.root = root  # 根节点
-        self._frequency = frequency  # 每秒运行的帧数
+    """ 手柄输入 """
 
-        self.paused = False  # 引擎暂停状态
-        self._frame = 0  # 帧数计数器
+
+class Engine:
+    """ 引擎类 """
+    from robotengine.node import Node
+    def __init__(self, root: Node, frequency: float=30, input_devices: InputDevice=[]):
+        """
+        初始化引擎
+
+        参数:
+
+            root (Node): 根节点
+
+            frequency (int, optional): 影响所有节点的 _process 函数的调用频率。默认值为 30。
+
+            input_devices (list, optional): 输入设备列表，当为空时，节点的 _input() 函数将不会被调用。默认值为 []。
+        """
+        self.root = root
+        """ 根节点 """
+        self.paused = False
+        """ 是否暂停 """
+
+        self._frequency = frequency
+        self._frame = 0
+        self._timestamp = 0.0
+
+        self._time_frequency = 30
 
         self.input = Input()
+        """ 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 """
 
-        self.initialize()  # 初始化引擎
+        self._initialize()
 
         self._shutdown = threading.Event()
         if input_devices:
@@ -35,9 +69,8 @@ class Engine:
         self._timer_thread = threading.Thread(target=self._timer, daemon=True)
         self._timer_thread.start()
 
-    def initialize(self):
-        """从叶子节点到根节点依次调用 _init 和 _ready"""
-        from .node import Node
+    def _initialize(self):
+        from robotengine.node import Node
         def init_recursive(node: Node):
             for child in node.get_children():
                 init_recursive(child)  # 先初始化子节点
@@ -56,7 +89,7 @@ class Engine:
         ready_recursive(self.root)
 
     def _process_update(self, delta):
-        from.node import Node
+        from robotengine.node import Node
         def update_recursive(node: Node, delta):
             for child in node.get_children():
                 update_recursive(child, delta)
@@ -64,26 +97,26 @@ class Engine:
         update_recursive(self.root, delta)
 
     def _update(self):
-        self.run_loop(1, precise_control=False, process_func=self._process_update)
+        self._run_loop(1, precise_control=False, process_func=self._process_update)
 
     def _process_timer(self, delta):
-        from.node import Node
+        from robotengine.node import Node
         def timer_recursive(node: Node, delta):
             for child in node.get_children():
-                timer_recursive(child, delta)  # 先更新子节点
-            node._timer(delta)  # 当前节点的更新逻辑
+                timer_recursive(child, delta)
+            node._timer(delta)
         timer_recursive(self.root, delta)
 
     def _timer(self):
-        self.run_loop(30, precise_control=False, process_func=self._process_timer)
+        self._run_loop(self._time_frequency, precise_control=False, process_func=self._process_timer)
             
     def _input(self):
-        from .node import Node
-        from .input import InputEvent
+        from robotengine.node import Node
+        from robotengine.input import InputEvent
         def input_recursive(node: Node, event: InputEvent):
             for child in node.get_children():
-                input_recursive(child, event)  # 先处理子节点
-            node._input(event)  # 当前节点的处理逻辑
+                input_recursive(child, event)
+            node._input(event)
 
         while not self._shutdown.is_set():
             if self._gamepad_listener:
@@ -93,7 +126,7 @@ class Engine:
                     input_recursive(self.root, _gamepad_event)
 
     def _process(self, delta):
-        from .node import Node
+        from robotengine.node import Node
         def process_recursive(node: Node):
             if self.paused:
                 if node.process_mode == ProcessMode.WHEN_PAUSED or node.process_mode == ProcessMode.ALWAYS:
@@ -107,12 +140,14 @@ class Engine:
         process_recursive(self.root)
 
     def run(self):
-        self.run_loop(self._frequency, precise_control=True, process_func=self._process, main_loop=True)
+        """ 开始运行引擎 """
+        self._run_loop(self._frequency, precise_control=True, process_func=self._process, main_loop=True)
 
     def stop(self):
+        """ 停止运行引擎 """
         self._shutdown.set()
 
-    def run_loop(self, frequency, precise_control=False, process_func=None, main_loop=False):
+    def _run_loop(self, frequency, precise_control=False, process_func=None, main_loop=False):
         interval = 1.0 / frequency
         threshold = 0.03
 
@@ -129,6 +164,7 @@ class Engine:
                 process_func(delta)
                 if main_loop:
                     self._frame += 1
+                    self._timestamp += delta
             else:
                 first_frame = False
 
@@ -147,12 +183,16 @@ class Engine:
                     time.sleep(max(0, sleep_time))
 
             if sleep_time <= 0 and main_loop:
-                print(f"WARNING: Skipping sleep. Frame took too long. Delta: {delta:.5f}s")
+                warning(f"当前帧{self._frame}耗时过长，耗时{delta:.5f}s")
 
             
     def get_frame(self) -> int:
         """获取当前帧数"""
         return self._frame
+    
+    def get_timestamp(self) -> float:
+        """获取当前时间戳"""
+        return self._timestamp
 
     def print_tree(self):
         """打印节点树"""

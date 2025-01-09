@@ -1,3 +1,9 @@
+"""
+
+robotengine 是一个基于 python 的机器人引擎，用于管理机器人的各个节点。
+
+"""
+
 from .engine import Engine
 from .engine import InputDevice
 
@@ -8,9 +14,9 @@ from .input import Input
 from .node import Node
 from .node import ProcessMode
 
-from .robotlink import RobotLink
+from .robotlink import RobotLink, RobotState
 
-from.serial_io import SerialIO, DeviceType, CheckSumType
+from .serial_io import SerialIO, DeviceType, CheckSumType
 
 from .signal import Signal
 

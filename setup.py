@@ -2,12 +2,17 @@ from setuptools import setup, find_packages
 
 setup(
     name="robotengine",
-    version="0.11",
+    version="0.14",
     packages=find_packages(),  # 自动发现所有的包和子包
     install_requires=[
         "pyserial>=0.5",
         "inputs>=0.5"
     ],
+    entry_points={
+        "console_scripts": [
+            "robotengine = robotengine.cli:main",
+        ],
+    },
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     author="EricSanchez",

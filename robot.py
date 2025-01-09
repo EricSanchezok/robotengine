@@ -1,11 +1,11 @@
 from enum import Enum
-from robotengine import Node
+from robotengine import Node, ProcessMode
 from robotengine import StateMachine
 from robotengine import SerialIO, DeviceType, CheckSumType
 from robotengine import Engine
 from robotengine import Timer
 from robotengine import InputEvent
-from robotengine import RobotLink
+from robotengine import RobotLink, RobotState
 
 class State(Enum):
     IDLE = 0
@@ -20,14 +20,22 @@ class Robot(Node):
         self.robotlink = RobotLink()
         self.add_child(self.robotlink)
 
+        self.robotlink.state_update.connect(self._on_state_update)
+
     def _ready(self) -> None:
         pass
 
     def _input(self, event: InputEvent) -> None:
         pass
 
+    def _on_state_update(self, state: RobotState) -> None:
+        self.rbprint(f"Buffer Length: {len(self.robotlink.state_buffer)} RobotState: {state}")
+        
     def tick(self, state: State, delta: float) -> None:
-        # print(f"[{self.engine.get_frame()}] {state}")
+        # if self.engine.get_frame() % 5 == 0:
+        #     print(f"[{self.engine.get_frame()}] {state}")
+        #     self.robotlink.sio.transmit(self.robotlink.sio.random_bytes(32))
+            
         if state == State.IDLE:
             pass
 
