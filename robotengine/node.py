@@ -30,8 +30,13 @@ class Node:
 
     def add_child(self, child_node):
         if child_node._parent is not None:
-            warning(f"{self.name}：{child_node.name} 已经有父节点！")
+            error(f"{self.name}：{child_node.name} 已经有父节点！")
             return
+        for child in self._children:
+            if child.name == child_node.name:
+                error(f"节点 {self.name} 已经有同名子节点{child_node.name} ！")
+                return
+
         child_node._parent = self  # 设置子节点的 _parent 属性
         if self.owner is not None:
             child_node.owner = self.owner

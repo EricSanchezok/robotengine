@@ -1,5 +1,6 @@
 from typing import Callable
 from .tools import warning
+import threading
 
 class Signal:
     def __init__(self, *param_types):
@@ -26,6 +27,10 @@ class Signal:
             if not isinstance(actual_arg, expected_type):
                 raise TypeError(f"Expected argument of type {expected_type}, but got {type(actual_arg)}")
 
+        new_thread = threading.Thread(target=self._emit, args=args, kwargs=kwargs, daemon=True)
+        new_thread.start()
+    
+    def _emit(self, *args, **kwargs):
         for callback in self._callbacks:
             callback(*args, **kwargs)
 

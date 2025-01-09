@@ -16,6 +16,7 @@ class Engine:
 
         self.paused = False  # 引擎暂停状态
         self._frame = 0  # 帧数计数器
+        self._timestamp = 0.0  # 时间戳
 
         self.input = Input()
 
@@ -36,7 +37,6 @@ class Engine:
         self._timer_thread.start()
 
     def initialize(self):
-        """从叶子节点到根节点依次调用 _init 和 _ready"""
         from .node import Node
         def init_recursive(node: Node):
             for child in node.get_children():
@@ -129,6 +129,7 @@ class Engine:
                 process_func(delta)
                 if main_loop:
                     self._frame += 1
+                    self._timestamp += delta
             else:
                 first_frame = False
 
@@ -153,6 +154,10 @@ class Engine:
     def get_frame(self) -> int:
         """获取当前帧数"""
         return self._frame
+    
+    def get_timestamp(self) -> float:
+        """获取当前时间戳"""
+        return self._timestamp
 
     def print_tree(self):
         """打印节点树"""
