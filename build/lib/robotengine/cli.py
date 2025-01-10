@@ -8,7 +8,8 @@ def main():
         "--doc", 
         action="store", 
         type=str, 
-        default="robotengine/docs/robotengine.html",  
+        default="docs/robotengine.html",  
+        nargs="?",
         help="Open the specified HTML file (default is robotengine.html)"
     )
     

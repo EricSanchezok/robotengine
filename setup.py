@@ -2,8 +2,9 @@ from setuptools import setup, find_packages
 
 setup(
     name="robotengine",
-    version="0.15",
+    version="0.17",
     packages=find_packages(),  # 自动发现所有的包和子包
+    include_package_data=True,  # 确保 MANIFEST.in 中指定的文件会被打包
     install_requires=[
         "pyserial>=0.5",
         "inputs>=0.5",
