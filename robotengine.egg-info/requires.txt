@@ -1,2 +1,4 @@
 pyserial>=0.5
 inputs>=0.5
+requests>=2.32.3
+aiohttp>=3.10.11

@@ -27,7 +27,7 @@ class InputDevice(Enum):
 class Engine:
     """ 引擎类 """
     from robotengine.node import Node
-    def __init__(self, root: Node, frequency: float=30, input_devices: InputDevice=[]):
+    def __init__(self, root: Node, frequency: float=240, input_devices: InputDevice=[]):
         """
         初始化引擎
 
@@ -35,7 +35,7 @@ class Engine:
 
             root (Node): 根节点
 
-            frequency (int, optional): 影响所有节点的 _process 函数的调用频率。默认值为 30。
+            frequency (int, optional): 影响所有节点的 _process 函数的调用频率。默认值为 240。
 
             input_devices (list, optional): 输入设备列表，当为空时，节点的 _input() 函数将不会被调用。默认值为 []。
         """

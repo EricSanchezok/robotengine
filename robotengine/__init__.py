@@ -14,7 +14,7 @@ from .input import Input
 from .node import Node
 from .node import ProcessMode
 
-from .robotlink import RobotLink, RobotState
+from .robot_link import HoRobotLink, HoRobotState, AlignState, HoMode
 
 from .serial_io import SerialIO, DeviceType, CheckSumType
 

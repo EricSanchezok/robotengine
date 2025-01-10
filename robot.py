@@ -5,7 +5,7 @@ from robotengine import SerialIO, DeviceType, CheckSumType
 from robotengine import Engine
 from robotengine import Timer
 from robotengine import InputEvent
-from robotengine import RobotLink, RobotState
+from robotengine import HoRobotLink, HoRobotState, HoMode, AlignState
 
 class State(Enum):
     IDLE = 0
@@ -17,10 +17,10 @@ class Robot(Node):
         self.state_machine = StateMachine(name="StateMachine", initial_state=State.IDLE)
         self.add_child(self.state_machine)
 
-        self.robotlink = RobotLink()
+        self.robotlink = HoRobotLink(url='http://127.0.0.1:7777/data')
         self.add_child(self.robotlink)
 
-        self.robotlink.state_update.connect(self._on_state_update)
+        self.robotlink.robot_state_update.connect(self._on_robot_state_update)
 
     def _ready(self) -> None:
         pass
@@ -28,14 +28,11 @@ class Robot(Node):
     def _input(self, event: InputEvent) -> None:
         pass
 
-    def _on_state_update(self, state: RobotState) -> None:
-        self.rbprint(f"Buffer Length: {len(self.robotlink.state_buffer)} RobotState: {state}")
-        
-    def tick(self, state: State, delta: float) -> None:
-        # if self.engine.get_frame() % 5 == 0:
-        #     print(f"[{self.engine.get_frame()}] {state}")
-        #     self.robotlink.sio.transmit(self.robotlink.sio.random_bytes(32))
-            
+    def _on_robot_state_update(self, robot_state: HoRobotState) -> None:
+        self.robotlink.update(2, HoMode.V, 0.8, -360.0, 0.0)
+        self.robotlink.update(3, HoMode.V, 0.8, 360.0, 0.0)
+
+    def tick(self, state: State, delta: float) -> None:    
         if state == State.IDLE:
             pass
 
@@ -59,9 +56,10 @@ class Robot(Node):
 
 if __name__ == '__main__':
     root = Node("Root")
+    
     robot = Robot()
     root.add_child(robot)
 
-    engine = Engine(root, frequency=1, input_devices=[])
+    engine = Engine(root, frequency=240, input_devices=[])
     engine.print_tree()
     engine.run()

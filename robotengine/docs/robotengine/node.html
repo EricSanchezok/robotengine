@@ -88,6 +88,9 @@
                                 <a class="function" href="#Node.get_parent">get_parent</a>
                         </li>
                         <li>
+                                <a class="function" href="#Node.rbprint">rbprint</a>
+                        </li>
+                        <li>
                                 <a class="class" href="#Node.InputEvent">Node.InputEvent</a>
                         </li>
                 </ul>
@@ -307,9 +310,12 @@ def _input(event: InputEvent) -&gt; None:
 </span><span id="L-164"><a href="#L-164"><span class="linenos">164</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Node&quot;</span><span class="p">:</span>
 </span><span id="L-165"><a href="#L-165"><span class="linenos">165</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 获取父节点 &quot;&quot;&quot;</span>
 </span><span id="L-166"><a href="#L-166"><span class="linenos">166</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
-</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>
-</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-167"><a href="#L-167"><span class="linenos">167</span></a>    
+</span><span id="L-168"><a href="#L-168"><span class="linenos">168</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rbprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+</span><span id="L-169"><a href="#L-169"><span class="linenos">169</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="nb">str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+</span><span id="L-170"><a href="#L-170"><span class="linenos">170</span></a>
+</span><span id="L-171"><a href="#L-171"><span class="linenos">171</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-172"><a href="#L-172"><span class="linenos">172</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 
 
@@ -539,9 +545,12 @@ def _input(event: InputEvent) -&gt; None:
 </span><span id="Node-165"><a href="#Node-165"><span class="linenos">165</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_parent</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Node&quot;</span><span class="p">:</span>
 </span><span id="Node-166"><a href="#Node-166"><span class="linenos">166</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 获取父节点 &quot;&quot;&quot;</span>
 </span><span id="Node-167"><a href="#Node-167"><span class="linenos">167</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parent</span>
-</span><span id="Node-168"><a href="#Node-168"><span class="linenos">168</span></a>
-</span><span id="Node-169"><a href="#Node-169"><span class="linenos">169</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Node-170"><a href="#Node-170"><span class="linenos">170</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="Node-168"><a href="#Node-168"><span class="linenos">168</span></a>    
+</span><span id="Node-169"><a href="#Node-169"><span class="linenos">169</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rbprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+</span><span id="Node-170"><a href="#Node-170"><span class="linenos">170</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="nb">str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+</span><span id="Node-171"><a href="#Node-171"><span class="linenos">171</span></a>
+</span><span id="Node-172"><a href="#Node-172"><span class="linenos">172</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Node-173"><a href="#Node-173"><span class="linenos">173</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
 </span></pre></div>
 
 
@@ -842,6 +851,25 @@ E.add_child(A)
             <div class="docstring"><p>获取父节点</p>
 </div>
 
+
+                            </div>
+                            <div id="Node.rbprint" class="classattr">
+                                        <input id="Node.rbprint-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">rbprint</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="nb">str</span>, </span><span class="param"><span class="n">end</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="Node.rbprint-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#Node.rbprint"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Node.rbprint-169"><a href="#Node.rbprint-169"><span class="linenos">169</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">rbprint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">):</span>
+</span><span id="Node.rbprint-170"><a href="#Node.rbprint-170"><span class="linenos">170</span></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">engine</span><span class="o">.</span><span class="n">get_frame</span><span class="p">()</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="nb">str</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="n">end</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
 
                             </div>
                 </section>

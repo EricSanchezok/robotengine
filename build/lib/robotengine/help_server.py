@@ -2,19 +2,34 @@ import http.server
 import socketserver
 import webbrowser
 import os
+import socket
 
-def start_server(html_file="docs\\robotengine.html", port=7777):
-    """启动一个本地 HTTP 服务器并打开指定的 HTML 文件"""
-    # 设置服务器工作目录为当前目录
-    os.chdir(os.path.dirname(os.path.abspath(html_file)))
+def find_free_port():
+    """找到一个空闲的端口"""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", 0))  # 绑定到一个随机空闲端口
+        return s.getsockname()[1]  # 返回分配的端口
 
-    # 启动 HTTP 服务器
+def start_server(html_file=""):
+    abspath = os.path.abspath(html_file)
+    file_dir = os.path.dirname(abspath)
+    print("绝对路径：", abspath)
+    print(f"切换到目录：{file_dir}")
+    os.chdir(file_dir)
+
+    if not os.path.exists(abspath):
+        print(f"File not found: {abspath}")
+        return
+
+    port = find_free_port()
+
     Handler = http.server.SimpleHTTPRequestHandler
     with socketserver.TCPServer(("", port), Handler) as httpd:
         print(f"Serving at http://localhost:{port}")
-        
-        # 自动打开浏览器
-        webbrowser.open(f'http://localhost:{port}/{html_file}')
-        
-        # 启动服务器并保持运行
+
+        relative_file_url = os.path.relpath(abspath, file_dir).replace("\\", "/")
+
+        webbrowser.open(f'http://localhost:{port}/{relative_file_url}')
+
         httpd.serve_forever()
+

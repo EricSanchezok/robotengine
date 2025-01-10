@@ -2,11 +2,13 @@ from setuptools import setup, find_packages
 
 setup(
     name="robotengine",
-    version="0.14",
+    version="0.15",
     packages=find_packages(),  # 自动发现所有的包和子包
     install_requires=[
         "pyserial>=0.5",
-        "inputs>=0.5"
+        "inputs>=0.5",
+        "requests>=2.32.3",
+        "aiohttp>=3.10.11",
     ],
     entry_points={
         "console_scripts": [

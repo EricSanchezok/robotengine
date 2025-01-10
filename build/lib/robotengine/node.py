@@ -164,6 +164,9 @@ class Node:
     def get_parent(self) -> "Node":
         """ 获取父节点 """
         return self._parent
+    
+    def rbprint(self, str, end="\n"):
+        print(f"[{self.engine.get_frame()}] {str}", end=end)
 
     def __repr__(self):
         return f"{self.name}"

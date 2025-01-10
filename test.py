@@ -1,25 +1,21 @@
-class MyClass:
-    """
-    这是一个示例类。
+import argparse
+from robotengine.help_server import start_server
 
-    Attributes:
-        attr1 (str): 一个字符串类型的属性。
-    """
+def main():
+    parser = argparse.ArgumentParser(prog="robotengine")
+    
+    parser.add_argument(
+        "--doc", 
+        action="store", 
+        type=str, 
+        default="robotengine/docs/robotengine.html",  
+        help="Open the specified HTML file (default is robotengine.html)"
+    )
+    
+    args = parser.parse_args()
 
-    def __init__(self, attr1):
-        """
-        初始化 MyClass 实例。
+    if args.doc:
+        start_server(html_file=args.doc)
 
-        Args:
-            attr1 (str): 字符串类型的参数。
-        """
-        self.attr1 = attr1
-
-    def my_method(self):
-        """
-        示例方法。
-
-        Returns:
-            str: 返回一个简单的字符串。
-        """
-        return "Hello, World!"
+if __name__ == "__main__":
+    main()
