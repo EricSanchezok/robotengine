@@ -1,5 +1,7 @@
 
 def hex2str(data) -> str:
+    if isinstance(data, int):
+        return f'{data:02X}'
     return ' '.join(f'{byte:02X}' for byte in data)
 
 def warning(msg) -> None:
@@ -10,3 +12,13 @@ def error(msg) -> None:
     msg = f"[ERROR] {msg}"
     print(f"\033[31m{msg}\033[0m")
     exit(1)
+
+def info(msg) -> None:
+    msg = f"[INFO] {msg}"
+    print(f"\033[32m{msg}\033[0m")
+
+def get_variable_name(obj):
+    for name, val in globals().items():
+        if val is obj:
+            return name
+    return None

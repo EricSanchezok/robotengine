@@ -13,7 +13,7 @@ input 是 robotengine 中用于处理输入的模块。
 
 from enum import Enum
 import inputs
-from robotengine.tools import error, warning
+from robotengine.tools import error, warning, info
 
 # 定义 JoyButton 和 JoyAxis 枚举
 class JoyButton(Enum):
@@ -191,7 +191,7 @@ class GamepadListener():
         if not self.devices:
             error("您开启了 Gamepad 输入检测，但是未检测到 Gamepad 设备，请连接 Gamepad 设备后重试")
         else:
-            warning(f"您开启了 Gamepad 输入检测，检测到 {len(self.devices)} 个 Gamepad 设备, 将使用第一个设备 {self.devices[0].name} 进行输入检测")
+            info(f"您开启了 Gamepad 输入检测，检测到 {len(self.devices)} 个 Gamepad 设备, 将使用第一个设备 {self.devices[0].name} 进行输入检测")
 
     def listen(self) -> InputEvent: # type: ignore
         """监听手柄输入并生成事件"""

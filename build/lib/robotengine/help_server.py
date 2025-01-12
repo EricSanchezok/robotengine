@@ -1,3 +1,10 @@
+"""
+帮助文档
+
+输入 robotengine 或 robotengine --doc 启动帮助文档
+
+"""
+
 import http.server
 import socketserver
 import webbrowser
@@ -12,25 +19,16 @@ def find_free_port():
 
 def start_server(html_file=""):
     print("启动帮助文档")
-    # print("html_file: ", html_file)
 
-    # 获取 help_server.py 的绝对路径
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # print("当前目录：", current_dir)
 
-    # 根据当前目录构造文件的绝对路径
     abspath = os.path.abspath(html_file)
-    # print("绝对路径：", abspath)
 
     if not abspath.startswith(current_dir):
         abspath = os.path.join(current_dir, html_file)
-        # print("修正后的绝对路径：", abspath)
 
     file_dir = os.path.dirname(abspath)
     
-    # print(f"切换到目录：{file_dir}")
-
-    # 切换到文件所在目录
     os.chdir(file_dir)
 
     if not os.path.exists(abspath):

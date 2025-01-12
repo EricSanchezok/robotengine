@@ -6,9 +6,9 @@ robotengine/__init__.py
 robotengine/cli.py
 robotengine/engine.py
 robotengine/help_server.py
+robotengine/ho_robot.py
 robotengine/input.py
 robotengine/node.py
-robotengine/robot_link.py
 robotengine/serial_io.py
 robotengine/signal.py
 robotengine/state_machine.py
@@ -23,13 +23,10 @@ robotengine.egg-info/top_level.txt
 robotengine/docs/index.html
 robotengine/docs/robotengine.html
 robotengine/docs/search.js
-robotengine/docs/robotengine/cli.html
 robotengine/docs/robotengine/engine.html
-robotengine/docs/robotengine/help_server.html
+robotengine/docs/robotengine/ho_robot.html
 robotengine/docs/robotengine/input.html
 robotengine/docs/robotengine/node.html
-robotengine/docs/robotengine/robot_link.html
-robotengine/docs/robotengine/robotlink.html
 robotengine/docs/robotengine/serial_io.html
 robotengine/docs/robotengine/signal.html
 robotengine/docs/robotengine/state_machine.html
