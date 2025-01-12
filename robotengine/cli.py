@@ -1,3 +1,7 @@
+"""
+执行 robotengine 命令行工具
+"""
+
 import argparse
 from robotengine.help_server import start_server
 

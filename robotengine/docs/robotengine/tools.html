@@ -39,6 +39,12 @@
             <li>
                     <a class="function" href="#error">error</a>
             </li>
+            <li>
+                    <a class="function" href="#info">info</a>
+            </li>
+            <li>
+                    <a class="function" href="#get_variable_name">get_variable_name</a>
+            </li>
     </ul>
 
 
@@ -61,16 +67,28 @@
                         <label class="view-source-button" for="mod-tools-view-source"><span>View Source</span></label>
 
                         <div class="pdoc-code codehilite"><pre><span></span><span id="L-1"><a href="#L-1"><span class="linenos"> 1</span></a><span class="k">def</span><span class="w"> </span><span class="nf">hex2str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">byte</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
-</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>
-</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a><span class="k">def</span><span class="w"> </span><span class="nf">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[WARNING] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[33m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
-</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>
-</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a><span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[ERROR] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
-</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="L-2"><a href="#L-2"><span class="linenos"> 2</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+</span><span id="L-3"><a href="#L-3"><span class="linenos"> 3</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span>
+</span><span id="L-4"><a href="#L-4"><span class="linenos"> 4</span></a>    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">byte</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="L-5"><a href="#L-5"><span class="linenos"> 5</span></a>
+</span><span id="L-6"><a href="#L-6"><span class="linenos"> 6</span></a><span class="k">def</span><span class="w"> </span><span class="nf">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-7"><a href="#L-7"><span class="linenos"> 7</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[WARNING] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-8"><a href="#L-8"><span class="linenos"> 8</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[33m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+</span><span id="L-9"><a href="#L-9"><span class="linenos"> 9</span></a>
+</span><span id="L-10"><a href="#L-10"><span class="linenos">10</span></a><span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-11"><a href="#L-11"><span class="linenos">11</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[ERROR] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-12"><a href="#L-12"><span class="linenos">12</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+</span><span id="L-13"><a href="#L-13"><span class="linenos">13</span></a>    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="L-14"><a href="#L-14"><span class="linenos">14</span></a>
+</span><span id="L-15"><a href="#L-15"><span class="linenos">15</span></a><span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-16"><a href="#L-16"><span class="linenos">16</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[INFO] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="L-17"><a href="#L-17"><span class="linenos">17</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[32m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+</span><span id="L-18"><a href="#L-18"><span class="linenos">18</span></a>
+</span><span id="L-19"><a href="#L-19"><span class="linenos">19</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_variable_name</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+</span><span id="L-20"><a href="#L-20"><span class="linenos">20</span></a>    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span id="L-21"><a href="#L-21"><span class="linenos">21</span></a>        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="n">obj</span><span class="p">:</span>
+</span><span id="L-22"><a href="#L-22"><span class="linenos">22</span></a>            <span class="k">return</span> <span class="n">name</span>
+</span><span id="L-23"><a href="#L-23"><span class="linenos">23</span></a>    <span class="k">return</span> <span class="kc">None</span>
 </span></pre></div>
 
 
@@ -87,7 +105,9 @@
     </div>
     <a class="headerlink" href="#hex2str"></a>
             <div class="pdoc-code codehilite"><pre><span></span><span id="hex2str-3"><a href="#hex2str-3"><span class="linenos">3</span></a><span class="k">def</span><span class="w"> </span><span class="nf">hex2str</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span><span id="hex2str-4"><a href="#hex2str-4"><span class="linenos">4</span></a>    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">byte</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+</span><span id="hex2str-4"><a href="#hex2str-4"><span class="linenos">4</span></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+</span><span id="hex2str-5"><a href="#hex2str-5"><span class="linenos">5</span></a>        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">data</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span>
+</span><span id="hex2str-6"><a href="#hex2str-6"><span class="linenos">6</span></a>    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">byte</span><span class="si">:</span><span class="s1">02X</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">for</span> <span class="n">byte</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -105,9 +125,9 @@
 
     </div>
     <a class="headerlink" href="#warning"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="warning-6"><a href="#warning-6"><span class="linenos">6</span></a><span class="k">def</span><span class="w"> </span><span class="nf">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="warning-7"><a href="#warning-7"><span class="linenos">7</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[WARNING] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="warning-8"><a href="#warning-8"><span class="linenos">8</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[33m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="warning-8"><a href="#warning-8"><span class="linenos"> 8</span></a><span class="k">def</span><span class="w"> </span><span class="nf">warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="warning-9"><a href="#warning-9"><span class="linenos"> 9</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[WARNING] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="warning-10"><a href="#warning-10"><span class="linenos">10</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[33m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -125,10 +145,52 @@
 
     </div>
     <a class="headerlink" href="#error"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="error-10"><a href="#error-10"><span class="linenos">10</span></a><span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="error-11"><a href="#error-11"><span class="linenos">11</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[ERROR] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="error-12"><a href="#error-12"><span class="linenos">12</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
-</span><span id="error-13"><a href="#error-13"><span class="linenos">13</span></a>    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="error-12"><a href="#error-12"><span class="linenos">12</span></a><span class="k">def</span><span class="w"> </span><span class="nf">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="error-13"><a href="#error-13"><span class="linenos">13</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[ERROR] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="error-14"><a href="#error-14"><span class="linenos">14</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[31m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+</span><span id="error-15"><a href="#error-15"><span class="linenos">15</span></a>    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
+
+                </section>
+                <section id="info">
+                            <input id="info-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">info</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">msg</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+
+                <label class="view-source-button" for="info-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#info"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="info-17"><a href="#info-17"><span class="linenos">17</span></a><span class="k">def</span><span class="w"> </span><span class="nf">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="info-18"><a href="#info-18"><span class="linenos">18</span></a>    <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;[INFO] </span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="info-19"><a href="#info-19"><span class="linenos">19</span></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\033</span><span class="s2">[32m</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="se">\033</span><span class="s2">[0m&quot;</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
+
+                </section>
+                <section id="get_variable_name">
+                            <input id="get_variable_name-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">get_variable_name</span><span class="signature pdoc-code condensed">(<span class="param"><span class="n">obj</span></span><span class="return-annotation">):</span></span>
+
+                <label class="view-source-button" for="get_variable_name-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#get_variable_name"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="get_variable_name-21"><a href="#get_variable_name-21"><span class="linenos">21</span></a><span class="k">def</span><span class="w"> </span><span class="nf">get_variable_name</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+</span><span id="get_variable_name-22"><a href="#get_variable_name-22"><span class="linenos">22</span></a>    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span id="get_variable_name-23"><a href="#get_variable_name-23"><span class="linenos">23</span></a>        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="n">obj</span><span class="p">:</span>
+</span><span id="get_variable_name-24"><a href="#get_variable_name-24"><span class="linenos">24</span></a>            <span class="k">return</span> <span class="n">name</span>
+</span><span id="get_variable_name-25"><a href="#get_variable_name-25"><span class="linenos">25</span></a>    <span class="k">return</span> <span class="kc">None</span>
 </span></pre></div>
 
 

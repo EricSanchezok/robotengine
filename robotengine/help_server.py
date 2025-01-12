@@ -1,3 +1,10 @@
+"""
+帮助文档
+
+输入 robotengine 或 robotengine --doc 启动帮助文档
+
+"""
+
 import http.server
 import socketserver
 import webbrowser
