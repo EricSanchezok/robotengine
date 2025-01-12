@@ -12,7 +12,7 @@ import time
 from enum import Enum
 from robotengine.input import Input, GamepadListener
 from robotengine.node import ProcessMode
-from robotengine.tools import warning, error
+from robotengine.tools import warning, error, info
 from robotengine.signal import Signal
 import multiprocessing
 
@@ -54,7 +54,7 @@ class Engine:
 
         self._initialize()
 
-        self._start_timestamp = time.perf_counter_ns()
+        self._start_timestamp = 0
 
         self._threads = []
         self._shutdown = threading.Event()
@@ -152,25 +152,40 @@ class Engine:
 
     def exit(self):
         """ 
-        停止运行引擎 
+        停止运行引擎
+
+        目前退出引擎的方式是极不安全的，正常应该在所有线程和进程退出后再退出引擎
         """
-        print("正在退出引擎")
+        import sys
+        import os
 
-        print("Threading 模块正在运行的线程有： ")
+        
+        info("正在退出引擎")
+        info("Threading 模块正在运行的线程有： ")
         for _thread in threading.enumerate():
-            print(_thread.ident , _thread.name)
+            info(f"{_thread.ident} {_thread.name}")
 
-        print("Multiprocessing 模块正在运行的进程有： ")
+        info("Multiprocessing 模块正在运行的进程有： ")
         for _process in multiprocessing.active_children():
-            print(_process.pid, _process.name)
+            info(f"{_process.pid} {_process.name}")
 
-        self._shutdown.set()
+        info("当前使用强制退出，注意可能导致后续不稳定")
+
+        os._exit(0)  # 强制退出，返回状态码为 0
+
+
+
+        # self._shutdown.set()
 
     def _do_exit(self) -> None:
-        for _thread in self._threads:
-            _thread.join()
+        pass
+        # for _thread in self._threads:
+        #     _thread.join()
 
-        self.engine_exit.emit()
+        # self.engine_exit.emit()
+
+        # time.sleep(1.0)
+        # exit(0)
         
     def _run_loop(self, frequency, precise_control=False, process_func=None, main_loop=False):
         interval = 1.0 / frequency
@@ -180,34 +195,47 @@ class Engine:
         next_time = last_time
         first_frame = True
 
+        if main_loop:
+            self._start_timestamp = time.perf_counter_ns()
+
         while not self._shutdown.is_set():
             current_time = time.perf_counter()
             delta = current_time - last_time
             last_time = current_time
 
-            if not first_frame and process_func:
-                process_func(delta)
-                if main_loop:
-                    self._frame += 1
-            else:
-                first_frame = False
-
-            next_time += interval
-            sleep_time = next_time - time.perf_counter()
-
-            if precise_control:
-                if sleep_time > threshold:
-                    time.sleep(sleep_time - threshold)
-
-                while time.perf_counter() < next_time:
-                    pass
+            if frequency == -1:
+                if not first_frame and process_func:
+                    process_func(delta)
+                    if main_loop:
+                        self._frame += 1
+                else:
+                    first_frame = False
 
             else:
-                if sleep_time > 0:
-                    time.sleep(max(0, sleep_time))
+                if not first_frame and process_func:
+                    process_func(delta)
+                    if main_loop:
+                        self._frame += 1
+                else:
+                    first_frame = False
 
-            if sleep_time <= 0 and main_loop:
-                warning(f"当前帧{self._frame}耗时过长，耗时{delta*1000:.3f}ms")
+                if frequency != -1:
+                    next_time += interval
+                    sleep_time = next_time - time.perf_counter()
+
+                    if precise_control:
+                        if sleep_time > threshold:
+                            time.sleep(sleep_time - threshold)
+
+                        while time.perf_counter() < next_time:
+                            pass
+
+                    else:
+                        if sleep_time > 0:
+                            time.sleep(max(0, sleep_time))
+
+                    if sleep_time < 0 and main_loop:
+                        warning(f"当前帧{self._frame}耗时过长，超时：{-sleep_time*1000:.3f}ms")
 
         if main_loop:
             self._do_exit()

@@ -1,7 +1,7 @@
 from enum import Enum
 from robotengine import Node, ProcessMode
 from robotengine import StateMachine
-from robotengine import SerialIO, DeviceType, CheckSumType, ReadMode
+from robotengine import SerialIO, DeviceType, CheckSumType
 from robotengine import Engine
 from robotengine import Timer
 from robotengine import InputEvent
@@ -17,7 +17,8 @@ class Robot(Node):
         self.state_machine = StateMachine(name="StateMachine", initial_state=State.IDLE)
         self.add_child(self.state_machine)
 
-        self.robotlink = HoLink(url='http://127.0.0.1:7777/data', read_mode=ReadMode.SINGLE, warn=warn)
+        url = 'http://127.0.0.1:7777/data'
+        self.robotlink = HoLink(url=url, warn=warn)
         self.add_child(self.robotlink)
 
         self.robotlink.robot_state_update.connect(self._on_robot_state_update)
@@ -31,10 +32,14 @@ class Robot(Node):
 
     def _on_robot_state_update(self, robot_state: HoState) -> None:
         pass
+        # self.rbprint("")
         # self.robotlink.update(2, HoMode.V, 0.8, -360.0, 0.0)
         # self.robotlink.update(3, HoMode.V, 0.8, 360.0, 0.0)
 
     def tick(self, state: State, delta: float) -> None:    
+        # for i in range(1, 9):
+        #     self.robotlink.update(i, HoMode.S, 0.0, 0.0, 0.0)
+
         if state == State.IDLE:
             pass
 

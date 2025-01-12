@@ -15,7 +15,7 @@ ho_robot 会不断被动地接收机器人的状态并更新，但是不会主�
 """
 
 from robotengine.node import Node
-from robotengine.serial_io import SerialIO, DeviceType, CheckSumType, ReadMode
+from robotengine.serial_io import SerialIO, DeviceType, CheckSumType
 from robotengine.tools import hex2str, warning, error, info
 from robotengine.signal import Signal
 from robotengine.timer import Timer
@@ -134,7 +134,7 @@ class HoState:
 
 class HoLink(Node):
     """ Ho 机器人链接节点 """
-    def __init__(self, name="HoLink", buffer_capacity: int=1024, url=None, read_mode: ReadMode=ReadMode.SINGLE, warn=True) -> None:
+    def __init__(self, name="HoLink", buffer_capacity: int=1024, url=None, warn=True) -> None:
         """ 
         初始化 Ho 机器人链接节点 
 
@@ -148,7 +148,6 @@ class HoLink(Node):
         self._data_length = 84
         self._receive_data = None
         self._url = url
-        self._read_mode = read_mode
         self._warn = warn
         
         if self._url:
@@ -163,7 +162,7 @@ class HoLink(Node):
         self.state_buffer: List[HoState] = []
         """ 存储状态数据的缓冲区 """
 
-        self.sio: SerialIO = SerialIO(name="HoSerialIO", device_type=DeviceType.STM32F407, checksum_type=CheckSumType.SUM16, header=[0x0D, 0x0A], warn=warn, baudrate=1000000, timeout=1.0, read_mode=self._read_mode)
+        self.sio: SerialIO = SerialIO(name="HoSerialIO", device_type=DeviceType.STM32F407, checksum_type=CheckSumType.SUM16, header=[0x0D, 0x0A], warn=warn, baudrate=1000000, timeout=1.0)
         """ 串口节点 HoLink 会主动挂载一个已经配置好的串口节点 """
         self.add_child(self.sio)
 
@@ -188,7 +187,7 @@ class HoLink(Node):
     def _send_request(self, ho_state_dict: dict) -> None:
         start_time = time.perf_counter()
         try:
-            response = requests.post(self._url, json=ho_state_dict)
+            response = requests.post(self._url, json=ho_state_dict, timeout=0.1)
 
             end_time = time.perf_counter()
             latency = end_time - start_time
@@ -196,10 +195,10 @@ class HoLink(Node):
 
         except requests.RequestException as e:
             if self._warn:
-                print(f"请求失败: {e}")
+                warning(f"请求失败: {e}")
         except Exception as e:
             if self._warn:
-                print(f"发生未知错误: {e}")
+                warning(f"发生未知错误: {e}")
 
     def _http_request(self):
         info(f"{self.name} 已开启向服务地址 {self._url} 发送数据的功能")
@@ -207,7 +206,6 @@ class HoLink(Node):
             if not self._pending_requests.empty():
                 ho_state = self._pending_requests.get()
                 self._send_request(ho_state.to_dict())
-            # time.sleep(0.01)
 
     def update(self, id: int, mode: HoMode, i: float, v: float, p: float) -> None:
         """ 
@@ -215,12 +213,10 @@ class HoLink(Node):
         """
         data = bytes([id]) + bytes([mode.value]) + self._encode(p, 100.0, 4) + \
             self._encode(v, 100.0, 4) + self._encode(i, 100.0, 2)
+        # print(f"发送数据: {hex2str(data)}")
         self.sio.transmit(data)
 
     def _process(self, delta) -> None:
-        if self.engine.get_frame() % 2 == 0:
-            self._add_pending_request(HoState([], random_state=True))
-
         self._receive_data = self.sio.receive(self._data_length)
         if self._receive_data:
             if self.sio.check_sum(self._receive_data):
@@ -249,7 +245,7 @@ class HoLink(Node):
                     self._add_pending_request(ho_state)
             else:
                 if self._warn:
-                    warning(f"{self.name} 接收数据 {hex2str(self._receive_data)} 校验和错误")
+                    warning(f"{self.name} 长度为 {len(self._receive_data)} 的数据 {hex2str(self._receive_data)} 校验和错误")
             self.receive.emit(self._receive_data)
 
     def _encode(self, value: float, scale_factor: float, byte_length: int) -> bytes:
@@ -286,10 +282,11 @@ class HoLink(Node):
 
         return decoded_value / scale_factor
     
-    def _on_engine_exit(self):
-        if self._url:
-            self._shutdown.set()
-            self._http_thread.join()
+    # def _on_engine_exit(self):
+    #     if self._url:
+    #         self._shutdown.set()
+    #         self._http_process.join()
+            
 
 class HoServer:
     def __init__(self, url: str, capacity=1024, ui: bool=True, ui_frequency: float=30.0) -> None:
@@ -313,8 +310,6 @@ class HoServer:
         self._data_buffer = []
         """ 
         数据缓冲区 
-
-        注意：若需要从数据缓冲区中读取数据，请尽快取出，否则会导致数据丢失
         """
 
         self._data_queue = multiprocessing.Queue()
@@ -355,6 +350,8 @@ class HoServer:
     def get_data_buffer(self) -> List[HoState]:
         """
         获取缓冲区。
+
+        注意：若需要从数据缓冲区中读取数据，请尽快取出，否则缓冲区溢出后最开始的数据会丢失
 
             :return: 缓冲区。
         """
@@ -477,7 +474,7 @@ class HoServer:
             for row in range(8):
                 align_state = ho_state.get_state(row + 1)
                 self.entries[(row, 0)].insert(0, str(align_state.frame))
-                self.entries[(row, 1)].insert(0, str(round(align_state.timestamp, 2)))
+                self.entries[(row, 1)].insert(0, str(align_state.timestamp))
                 self.entries[(row, 2)].insert(0, str(round(align_state.i, 2)))
                 self.entries[(row, 3)].insert(0, str(round(align_state.v, 2)))
                 self.entries[(row, 4)].insert(0, str(round(align_state.p, 2)))
@@ -498,6 +495,24 @@ class HoServer:
         self._data_thread.join()
         if self._ui:
             self._ui_thread.join()
+
+
+
+class ManualState(Enum):
+    """ 手动状态枚举 """
+    IDLE = 0
+    """ 空闲 """
+    ALIGN = 1
+    """ 对齐 """
+    SHOOT = 2
+    """ 射击 """
+
+class HoManual(Node):
+    def __init__(self, link: HoLink, name="Manual") -> None:
+        from robotengine import StateMachine
+        super().__init__(name)
+        self._link = link
+        self.state_machine = StateMachine(ManualState.IDLE, name="StateMachine")
 
 
 # if __name__ == "__main__":

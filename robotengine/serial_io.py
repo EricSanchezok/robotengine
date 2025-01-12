@@ -9,14 +9,7 @@ import serial.tools.list_ports
 import serial
 from enum import Enum
 import random
-from robotengine.tools import hex2str, warning, error
-
-class ReadMode(Enum):
-    """ 串口读取模式枚举 """
-    SINGLE = 0
-    """ 单次读取 """
-    MULTIPLE = 1
-    """ 多次读取 """
+from robotengine.tools import hex2str, warning, error, info
 
 class DeviceType(Enum):
     """ 设备类型枚举 """
@@ -54,7 +47,7 @@ checksum_length_map = {
 
 class SerialIO(Node):
     """ 串口节点 """
-    def __init__(self, name="SerialIO", device_type=DeviceType.STM32F407, checksum_type=CheckSumType.NONE, header=[], baudrate=115200, timeout=1.0, read_mode: ReadMode = ReadMode.SINGLE, warn=True):
+    def __init__(self, name="SerialIO", device_type=DeviceType.STM32F407, checksum_type=CheckSumType.NONE, header=[], baudrate=115200, timeout=1.0, warn=True):
         """ 
         初始化串口节点。
 
@@ -64,17 +57,16 @@ class SerialIO(Node):
             :param header: 数据头。
             :param baudrate: 波特率。
             :param timeout: 超时时间。
-            :param read_mode: 读取模式。
         """
         super().__init__(name)
         self._device_type = device_type
         self._checksum_type = checksum_type
         self._header = header
+        self._header_flag = 0
         self._device = None
         self._serial: serial.Serial = None
         self._baudrate = baudrate
         self._timeout = timeout
-        self._read_mode = read_mode
 
         self._warn = warn
         self._receive_data = bytes()
@@ -91,7 +83,7 @@ class SerialIO(Node):
     def _initialize(self):
         self._device = self._find_device()
         if self._device:
-            print(f"节点 {self.name} 初始化时检测到 {self._device_type} 设备，串口为 {self._device}，波特率为 {self._baudrate}")
+            info(f"节点 {self.name} 初始化时检测到 {self._device_type} 设备，串口为 {self._device}，波特率为 {self._baudrate}")
             self._serial = serial.Serial(self._device, self._baudrate, timeout=self._timeout)
             # 清空串口缓冲区
             self._serial.reset_input_buffer()
@@ -177,8 +169,8 @@ class SerialIO(Node):
             data = self._add_header(data)
         self._serial.write(data)
         return data
-            
-    def receive(self, len: int) -> bytes:
+    
+    def receive(self, length: int) -> bytes:
         """ 
         接收串口数据 
         
@@ -189,24 +181,55 @@ class SerialIO(Node):
                 warning(f"节点 {self.name} 串口未初始化，无法接收数据")
             return
         
-        if self._read_mode == ReadMode.SINGLE:
-            if self._serial.in_waiting >= 0:
-                self._receive_data += self._serial.read(self._serial.in_waiting)
-                if len(self._receive_data) >= len:
-                    return_data = self._receive_data[:len]
-                    self._receive_data = self._receive_data[len:]
-                    return return_data
-                else:
-                    return None
-                
-        elif self._read_mode == ReadMode.MULTIPLE:
-            if self._serial.in_waiting >= len:
-                self._receive_data += self._serial.read(self._serial.in_waiting)
-                return_data = self._receive_data[:len]
-                self._receive_data = self._receive_data[len:]
-                return return_data
+        in_waiting = self._serial.in_waiting
+        if in_waiting == 0:
+            return None
+        
+        if self._header and self._header_flag < len(self._header):
+            target_data = self._header[self._header_flag]
+            data = self._serial.read(1)
+            if ord(data) == target_data:
+                self._header_flag += 1
+                self._receive_data += data
             else:
-                return None
+                self._header_flag = 0
+                self._receive_data = bytes()
+            return None
+        
+        pending_length = length - len(self._receive_data)
+        self._receive_data += self._serial.read(min(in_waiting, pending_length))
+        if len(self._receive_data) >= length:
+            data = self._receive_data[:length]
+            self._receive_data = self._receive_data[length:]
+            self._header_flag = 0
+            return data
+        else:
+            return None
+        
+            
+    # def receive(self, length: int) -> bytes:
+    #     """ 
+    #     接收串口数据 
+        
+    #         :param len: 接收数据的长度
+    #     """
+    #     if self._serial is None:
+    #         if self._warn:
+    #             warning(f"节点 {self.name} 串口未初始化，无法接收数据")
+    #         return
+        
+    #     in_waiting = self._serial.in_waiting
+    #     pending_length = length - len(self._receive_data)
+    #     if in_waiting >= 0:
+    #         self._receive_data += self._serial.read(min(in_waiting, pending_length))
+    #         if len(self._receive_data) >= length:
+    #             data = self._receive_data[:length]
+    #             self._receive_data = self._receive_data[length:]
+    #             return data
+    #         else:
+    #             return None
+    #     else:
+    #         return None
         
     def check_sum(self, data: bytes) -> bool:
         """ 校验串口数据 """

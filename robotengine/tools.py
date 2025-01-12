@@ -1,5 +1,7 @@
 
 def hex2str(data) -> str:
+    if isinstance(data, int):
+        return f'{data:02X}'
     return ' '.join(f'{byte:02X}' for byte in data)
 
 def warning(msg) -> None:

@@ -16,7 +16,7 @@ from .node import ProcessMode
 
 from .ho_robot import HoLink, HoState, AlignState, HoMode, HoServer
 
-from .serial_io import SerialIO, DeviceType, CheckSumType, ReadMode
+from .serial_io import SerialIO, DeviceType, CheckSumType
 
 from .signal import Signal
 
