@@ -6,11 +6,12 @@ from robot import Robot
 if __name__ == '__main__':
     root = Node("Root")
     
-    robot = Robot()
+    robot = Robot(warn=False)
     root.add_child(robot)
 
-    engine = Engine(root, frequency=240, input_devices=[])
-    engine.print_tree()
+    root.print_tree()
+
+    engine = Engine(root, frequency=180, input_devices=[])
     engine.run()
 
 

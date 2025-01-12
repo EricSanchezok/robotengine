@@ -50,7 +50,11 @@ class Node:
     from robotengine.input import InputEvent
 
     def __init__(self, name="Node"):
-        """ 初始化节点， 需要指定节点名称 """
+        """ 
+        初始化节点
+
+            :param name: 节点名称
+        """
         self.name = name
         """ 节点名称 """
         self.owner = None
@@ -97,7 +101,11 @@ class Node:
         """ 信号，节点 _ready 执行结束后触发 """
 
     def add_child(self, child_node):
-        """ 添加子节点 """
+        """ 
+        添加子节点 
+        
+            :param child_node: 子节点
+        """
         if child_node._parent is not None:
             error(f"{self.name}：{child_node.name} 已经有父节点！")
             return
@@ -115,7 +123,11 @@ class Node:
         self._children.append(child_node)
 
     def remove_child(self, child_node):
-        """ 移除子节点 """
+        """ 
+        移除子节点 
+        
+            :param child_node: 子节点
+        """
         if child_node in self._children:
             self._children.remove(child_node)
             child_node._parent = None  # 解除 _parent 绑定
@@ -123,49 +135,100 @@ class Node:
             warning(f"{self.name}：{child_node.name} 并未被找到，未执行移除操作")
 
     def _update(self, delta) -> None:
-        """ 引擎内部的节点更新函数，会以很低的频率调用 """
+        """ 
+        引擎内部的节点更新函数，会以很低的频率调用 
+        """
         pass
 
     def _timer(self, delta) -> None:
-        """ 引擎内部的定时器更新函数，负责 Timer 相关的更新 """
+        """ 
+        引擎内部的定时器更新函数，负责 Timer 相关的更新 
+        """
         pass
 
     def _init(self) -> None:
-        """ 初始化节点，会在 _ready() 之前被调用，尽量不要覆写此函数 """
+        """ 
+        初始化节点，会在 _ready() 之前被调用，尽量不要覆写此函数 
+        """
         pass
     
     def _ready(self) -> None:
-        """ 节点 _ready 函数，会在 _init() 之后被调用，可以在此函数中执行一些初始化操作 """
+        """ 
+        节点 _ready 函数，会在 _init() 之后被调用，可以在此函数中执行一些初始化操作 
+        """
         pass
 
-    def _ready_execute(self) -> None:
+    def _do_ready(self) -> None:
         self._ready()
         self.ready.emit()
 
     def _process(self, delta) -> None:
-        """ 节点 process 函数，会根据 Engine 中设置的 frequency 进行连续调用 """
+        """ 
+        节点 process 函数，会根据 Engine 中设置的 frequency 进行连续调用 
+        """
         pass
 
     def _input(self, event: InputEvent) -> None:
-        """ 节点 input 函数，会在接收到输入事件时被调用 """
+        """ 
+        节点 input 函数，会在接收到输入事件时被调用 
+        
+            :param event: 输入事件
+        """
+        pass
+
+    def _on_engine_exit(self) -> None:
+        """ 引擎退出时调用的函数 """
         pass
 
     def get_child(self, name) -> "Node":
-        """ 通过节点名称获取子节点 """
+        """ 
+        通过节点名称获取子节点 
+        
+            :param name: 节点名称
+        """
         for child in self._children:
             if child.name == name:
                 return child
         return None
     
     def get_children(self) -> List["Node"]:
-        """ 获取所有子节点 """
+        """ 
+        获取所有子节点 
+        """
         return self._children
     
     def get_parent(self) -> "Node":
-        """ 获取父节点 """
+        """ 
+        获取父节点 
+        """
         return self._parent
     
+    def print_tree(self):
+        """ 
+        打印节点树 
+        """
+        def print_recursive(node: "Node", prefix="", is_last=False, is_root=False):
+            if is_root:
+                print(f"{node}")  # 根节点
+            else:
+                if is_last:
+                    print(f"{prefix}└── {node}")  # 最后一个子节点
+                else:
+                    print(f"{prefix}├── {node}")  # 其他子节点
+
+            for i, child in enumerate(node.get_children()):
+                is_last_child = (i == len(node.get_children()) - 1)
+                print_recursive(child, prefix + "    ", is_last=is_last_child, is_root=False)
+
+        print_recursive(self, is_last=False, is_root=True)
+    
     def rbprint(self, str, end="\n"):
+        """
+        打印带有帧号的字符串
+        
+            :param str: 要打印的字符串
+            :param end: 结束符
+        """
         print(f"[{self.engine.get_frame()}] {str}", end=end)
 
     def __repr__(self):

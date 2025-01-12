@@ -30,7 +30,12 @@ class StateMachine(Node):
     """ 维持当前状态的状态码 """
 
     def __init__(self, initial_state, name="StateMachine"):
-        """ 初始化状态机， 需要传递初始状态，通常是枚举类型 """
+        """ 
+        初始化状态机， 需要传递初始状态，通常是枚举类型 
+        
+            :param initial_state: 初始状态
+            :param name: 节点名称
+        """
         super().__init__(name)
         self.state_time = 0.0
         """ 当前状态持续的时间 """
