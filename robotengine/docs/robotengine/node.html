@@ -1094,22 +1094,22 @@ E.add_child(A)
 
     </div>
     <a class="headerlink" href="#Node.InputEvent"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Node.InputEvent-130"><a href="#Node.InputEvent-130"><span class="linenos">130</span></a><span class="k">class</span><span class="w"> </span><span class="nc">InputEvent</span><span class="p">:</span>
-</span><span id="Node.InputEvent-131"><a href="#Node.InputEvent-131"><span class="linenos">131</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; 输入事件基类 &quot;&quot;&quot;</span>
-</span><span id="Node.InputEvent-132"><a href="#Node.InputEvent-132"><span class="linenos">132</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Node.InputEvent-133"><a href="#Node.InputEvent-133"><span class="linenos">133</span></a>        <span class="k">pass</span>
-</span><span id="Node.InputEvent-134"><a href="#Node.InputEvent-134"><span class="linenos">134</span></a>
-</span><span id="Node.InputEvent-135"><a href="#Node.InputEvent-135"><span class="linenos">135</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_action_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="Node.InputEvent-136"><a href="#Node.InputEvent-136"><span class="linenos">136</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 返回某个动作的强度 &quot;&quot;&quot;</span>
-</span><span id="Node.InputEvent-137"><a href="#Node.InputEvent-137"><span class="linenos">137</span></a>        <span class="k">pass</span>
-</span><span id="Node.InputEvent-138"><a href="#Node.InputEvent-138"><span class="linenos">138</span></a>
-</span><span id="Node.InputEvent-139"><a href="#Node.InputEvent-139"><span class="linenos">139</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_action_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Node.InputEvent-140"><a href="#Node.InputEvent-140"><span class="linenos">140</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 检查某个动作是否被按下 &quot;&quot;&quot;</span>
-</span><span id="Node.InputEvent-141"><a href="#Node.InputEvent-141"><span class="linenos">141</span></a>        <span class="k">pass</span>
-</span><span id="Node.InputEvent-142"><a href="#Node.InputEvent-142"><span class="linenos">142</span></a>
-</span><span id="Node.InputEvent-143"><a href="#Node.InputEvent-143"><span class="linenos">143</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_action_released</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="Node.InputEvent-144"><a href="#Node.InputEvent-144"><span class="linenos">144</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 检查某个动作是否被释放 &quot;&quot;&quot;</span>
-</span><span id="Node.InputEvent-145"><a href="#Node.InputEvent-145"><span class="linenos">145</span></a>        <span class="k">pass</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Node.InputEvent-139"><a href="#Node.InputEvent-139"><span class="linenos">139</span></a><span class="k">class</span><span class="w"> </span><span class="nc">InputEvent</span><span class="p">:</span>
+</span><span id="Node.InputEvent-140"><a href="#Node.InputEvent-140"><span class="linenos">140</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot; 输入事件基类 &quot;&quot;&quot;</span>
+</span><span id="Node.InputEvent-141"><a href="#Node.InputEvent-141"><span class="linenos">141</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Node.InputEvent-142"><a href="#Node.InputEvent-142"><span class="linenos">142</span></a>        <span class="k">pass</span>
+</span><span id="Node.InputEvent-143"><a href="#Node.InputEvent-143"><span class="linenos">143</span></a>
+</span><span id="Node.InputEvent-144"><a href="#Node.InputEvent-144"><span class="linenos">144</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_action_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Node.InputEvent-145"><a href="#Node.InputEvent-145"><span class="linenos">145</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 返回某个动作的强度 &quot;&quot;&quot;</span>
+</span><span id="Node.InputEvent-146"><a href="#Node.InputEvent-146"><span class="linenos">146</span></a>        <span class="k">pass</span>
+</span><span id="Node.InputEvent-147"><a href="#Node.InputEvent-147"><span class="linenos">147</span></a>
+</span><span id="Node.InputEvent-148"><a href="#Node.InputEvent-148"><span class="linenos">148</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_action_pressed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Node.InputEvent-149"><a href="#Node.InputEvent-149"><span class="linenos">149</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 检查某个动作是否被按下 &quot;&quot;&quot;</span>
+</span><span id="Node.InputEvent-150"><a href="#Node.InputEvent-150"><span class="linenos">150</span></a>        <span class="k">pass</span>
+</span><span id="Node.InputEvent-151"><a href="#Node.InputEvent-151"><span class="linenos">151</span></a>
+</span><span id="Node.InputEvent-152"><a href="#Node.InputEvent-152"><span class="linenos">152</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_action_released</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="Node.InputEvent-153"><a href="#Node.InputEvent-153"><span class="linenos">153</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 检查某个动作是否被释放 &quot;&quot;&quot;</span>
+</span><span id="Node.InputEvent-154"><a href="#Node.InputEvent-154"><span class="linenos">154</span></a>        <span class="k">pass</span>
 </span></pre></div>
 
 

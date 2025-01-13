@@ -45,6 +45,15 @@
                         <li>
                                 <a class="variable" href="#StateMachine.current_state">current_state</a>
                         </li>
+                        <li>
+                                <a class="variable" href="#StateMachine.first_tick">first_tick</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#StateMachine.freeze">freeze</a>
+                        </li>
+                        <li>
+                                <a class="function" href="#StateMachine.t_info">t_info</a>
+                        </li>
                 </ul>
 
             </li>
@@ -131,27 +140,36 @@ def transition_state(self, from, to):
 </span><span id="L-41"><a href="#L-41"><span class="linenos">41</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 当前状态持续的时间 &quot;&quot;&quot;</span>
 </span><span id="L-42"><a href="#L-42"><span class="linenos">42</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span>
 </span><span id="L-43"><a href="#L-43"><span class="linenos">43</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 状态机的当前状态 &quot;&quot;&quot;</span>
-</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a>         
-</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a>        <span class="n">start_transition_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="p">:</span>
-</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>
-</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>            <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>            <span class="k">if</span> <span class="nb">next</span> <span class="o">==</span> <span class="n">StateMachine</span><span class="o">.</span><span class="n">KEEP_CURRENT</span><span class="p">:</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>                <span class="k">break</span>
-</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
-</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="nb">next</span>
-</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>
-</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_transition_time</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
-</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>                <span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state_machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2"> transition timeout&quot;</span><span class="p">)</span>
-</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>
-</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
-</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">+=</span> <span class="n">delta</span>
+</span><span id="L-44"><a href="#L-44"><span class="linenos">44</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="L-45"><a href="#L-45"><span class="linenos">45</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 是否是第一帧（刚初始化StateMachine时） &quot;&quot;&quot;</span>
+</span><span id="L-46"><a href="#L-46"><span class="linenos">46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">freeze</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-47"><a href="#L-47"><span class="linenos">47</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 是否冻结状态机 &quot;&quot;&quot;</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos">48</span></a>         
+</span><span id="L-49"><a href="#L-49"><span class="linenos">49</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos">50</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freeze</span><span class="p">:</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos">51</span></a>            <span class="k">return</span>
+</span><span id="L-52"><a href="#L-52"><span class="linenos">52</span></a>        
+</span><span id="L-53"><a href="#L-53"><span class="linenos">53</span></a>        <span class="n">start_transition_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos">54</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span id="L-55"><a href="#L-55"><span class="linenos">55</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span><span class="p">:</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos">56</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-57"><a href="#L-57"><span class="linenos">57</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos">58</span></a>
+</span><span id="L-59"><a href="#L-59"><span class="linenos">59</span></a>            <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
+</span><span id="L-60"><a href="#L-60"><span class="linenos">60</span></a>            <span class="k">if</span> <span class="nb">next</span> <span class="o">==</span> <span class="n">StateMachine</span><span class="o">.</span><span class="n">KEEP_CURRENT</span><span class="p">:</span>
+</span><span id="L-61"><a href="#L-61"><span class="linenos">61</span></a>                <span class="k">break</span>
+</span><span id="L-62"><a href="#L-62"><span class="linenos">62</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
+</span><span id="L-63"><a href="#L-63"><span class="linenos">63</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="nb">next</span>
+</span><span id="L-64"><a href="#L-64"><span class="linenos">64</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="L-65"><a href="#L-65"><span class="linenos">65</span></a>
+</span><span id="L-66"><a href="#L-66"><span class="linenos">66</span></a>            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_transition_time</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+</span><span id="L-67"><a href="#L-67"><span class="linenos">67</span></a>                <span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state_machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2"> transition timeout&quot;</span><span class="p">)</span>
+</span><span id="L-68"><a href="#L-68"><span class="linenos">68</span></a>
+</span><span id="L-69"><a href="#L-69"><span class="linenos">69</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+</span><span id="L-70"><a href="#L-70"><span class="linenos">70</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">+=</span> <span class="n">delta</span>
+</span><span id="L-71"><a href="#L-71"><span class="linenos">71</span></a>
+</span><span id="L-72"><a href="#L-72"><span class="linenos">72</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">t_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_state</span><span class="p">,</span> <span class="n">to_state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="L-73"><a href="#L-73"><span class="linenos">73</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rbprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_state</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">from_state</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;START&#39;</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_state</span><span class="si">}</span><span class="s2"> from:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -184,27 +202,36 @@ def transition_state(self, from, to):
 </span><span id="StateMachine-42"><a href="#StateMachine-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 当前状态持续的时间 &quot;&quot;&quot;</span>
 </span><span id="StateMachine-43"><a href="#StateMachine-43"><span class="linenos">43</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span>
 </span><span id="StateMachine-44"><a href="#StateMachine-44"><span class="linenos">44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 状态机的当前状态 &quot;&quot;&quot;</span>
-</span><span id="StateMachine-45"><a href="#StateMachine-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="StateMachine-46"><a href="#StateMachine-46"><span class="linenos">46</span></a>         
-</span><span id="StateMachine-47"><a href="#StateMachine-47"><span class="linenos">47</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="StateMachine-48"><a href="#StateMachine-48"><span class="linenos">48</span></a>        <span class="n">start_transition_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
-</span><span id="StateMachine-49"><a href="#StateMachine-49"><span class="linenos">49</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-</span><span id="StateMachine-50"><a href="#StateMachine-50"><span class="linenos">50</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_first</span><span class="p">:</span>
-</span><span id="StateMachine-51"><a href="#StateMachine-51"><span class="linenos">51</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="StateMachine-52"><a href="#StateMachine-52"><span class="linenos">52</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
-</span><span id="StateMachine-53"><a href="#StateMachine-53"><span class="linenos">53</span></a>
-</span><span id="StateMachine-54"><a href="#StateMachine-54"><span class="linenos">54</span></a>            <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
-</span><span id="StateMachine-55"><a href="#StateMachine-55"><span class="linenos">55</span></a>            <span class="k">if</span> <span class="nb">next</span> <span class="o">==</span> <span class="n">StateMachine</span><span class="o">.</span><span class="n">KEEP_CURRENT</span><span class="p">:</span>
-</span><span id="StateMachine-56"><a href="#StateMachine-56"><span class="linenos">56</span></a>                <span class="k">break</span>
-</span><span id="StateMachine-57"><a href="#StateMachine-57"><span class="linenos">57</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
-</span><span id="StateMachine-58"><a href="#StateMachine-58"><span class="linenos">58</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="nb">next</span>
-</span><span id="StateMachine-59"><a href="#StateMachine-59"><span class="linenos">59</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">=</span> <span class="mf">0.0</span>
-</span><span id="StateMachine-60"><a href="#StateMachine-60"><span class="linenos">60</span></a>
-</span><span id="StateMachine-61"><a href="#StateMachine-61"><span class="linenos">61</span></a>            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_transition_time</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
-</span><span id="StateMachine-62"><a href="#StateMachine-62"><span class="linenos">62</span></a>                <span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state_machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2"> transition timeout&quot;</span><span class="p">)</span>
-</span><span id="StateMachine-63"><a href="#StateMachine-63"><span class="linenos">63</span></a>
-</span><span id="StateMachine-64"><a href="#StateMachine-64"><span class="linenos">64</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
-</span><span id="StateMachine-65"><a href="#StateMachine-65"><span class="linenos">65</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">+=</span> <span class="n">delta</span>
+</span><span id="StateMachine-45"><a href="#StateMachine-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="StateMachine-46"><a href="#StateMachine-46"><span class="linenos">46</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 是否是第一帧（刚初始化StateMachine时） &quot;&quot;&quot;</span>
+</span><span id="StateMachine-47"><a href="#StateMachine-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">freeze</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="StateMachine-48"><a href="#StateMachine-48"><span class="linenos">48</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 是否冻结状态机 &quot;&quot;&quot;</span>
+</span><span id="StateMachine-49"><a href="#StateMachine-49"><span class="linenos">49</span></a>         
+</span><span id="StateMachine-50"><a href="#StateMachine-50"><span class="linenos">50</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">_process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delta</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="StateMachine-51"><a href="#StateMachine-51"><span class="linenos">51</span></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">freeze</span><span class="p">:</span>
+</span><span id="StateMachine-52"><a href="#StateMachine-52"><span class="linenos">52</span></a>            <span class="k">return</span>
+</span><span id="StateMachine-53"><a href="#StateMachine-53"><span class="linenos">53</span></a>        
+</span><span id="StateMachine-54"><a href="#StateMachine-54"><span class="linenos">54</span></a>        <span class="n">start_transition_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+</span><span id="StateMachine-55"><a href="#StateMachine-55"><span class="linenos">55</span></a>        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span id="StateMachine-56"><a href="#StateMachine-56"><span class="linenos">56</span></a>            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span><span class="p">:</span>
+</span><span id="StateMachine-57"><a href="#StateMachine-57"><span class="linenos">57</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="StateMachine-58"><a href="#StateMachine-58"><span class="linenos">58</span></a>                <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
+</span><span id="StateMachine-59"><a href="#StateMachine-59"><span class="linenos">59</span></a>
+</span><span id="StateMachine-60"><a href="#StateMachine-60"><span class="linenos">60</span></a>            <span class="nb">next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">get_next_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">)</span>
+</span><span id="StateMachine-61"><a href="#StateMachine-61"><span class="linenos">61</span></a>            <span class="k">if</span> <span class="nb">next</span> <span class="o">==</span> <span class="n">StateMachine</span><span class="o">.</span><span class="n">KEEP_CURRENT</span><span class="p">:</span>
+</span><span id="StateMachine-62"><a href="#StateMachine-62"><span class="linenos">62</span></a>                <span class="k">break</span>
+</span><span id="StateMachine-63"><a href="#StateMachine-63"><span class="linenos">63</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">transition_state</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="nb">next</span><span class="p">)</span>
+</span><span id="StateMachine-64"><a href="#StateMachine-64"><span class="linenos">64</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="nb">next</span>
+</span><span id="StateMachine-65"><a href="#StateMachine-65"><span class="linenos">65</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">=</span> <span class="mf">0.0</span>
+</span><span id="StateMachine-66"><a href="#StateMachine-66"><span class="linenos">66</span></a>
+</span><span id="StateMachine-67"><a href="#StateMachine-67"><span class="linenos">67</span></a>            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_transition_time</span> <span class="o">&gt;</span> <span class="mf">1.0</span><span class="p">:</span>
+</span><span id="StateMachine-68"><a href="#StateMachine-68"><span class="linenos">68</span></a>                <span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> state_machine </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="si">}</span><span class="s2"> transition timeout&quot;</span><span class="p">)</span>
+</span><span id="StateMachine-69"><a href="#StateMachine-69"><span class="linenos">69</span></a>
+</span><span id="StateMachine-70"><a href="#StateMachine-70"><span class="linenos">70</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">current_state</span><span class="p">,</span> <span class="n">delta</span><span class="p">)</span>
+</span><span id="StateMachine-71"><a href="#StateMachine-71"><span class="linenos">71</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">state_time</span> <span class="o">+=</span> <span class="n">delta</span>
+</span><span id="StateMachine-72"><a href="#StateMachine-72"><span class="linenos">72</span></a>
+</span><span id="StateMachine-73"><a href="#StateMachine-73"><span class="linenos">73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">t_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_state</span><span class="p">,</span> <span class="n">to_state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="StateMachine-74"><a href="#StateMachine-74"><span class="linenos">74</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rbprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_state</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">from_state</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;START&#39;</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_state</span><span class="si">}</span><span class="s2"> from:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -234,7 +261,10 @@ def transition_state(self, from, to):
 </span><span id="StateMachine.__init__-42"><a href="#StateMachine.__init__-42"><span class="linenos">42</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 当前状态持续的时间 &quot;&quot;&quot;</span>
 </span><span id="StateMachine.__init__-43"><a href="#StateMachine.__init__-43"><span class="linenos">43</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">current_state</span> <span class="o">=</span> <span class="n">initial_state</span>
 </span><span id="StateMachine.__init__-44"><a href="#StateMachine.__init__-44"><span class="linenos">44</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 状态机的当前状态 &quot;&quot;&quot;</span>
-</span><span id="StateMachine.__init__-45"><a href="#StateMachine.__init__-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_first</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="StateMachine.__init__-45"><a href="#StateMachine.__init__-45"><span class="linenos">45</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">first_tick</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="StateMachine.__init__-46"><a href="#StateMachine.__init__-46"><span class="linenos">46</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 是否是第一帧（刚初始化StateMachine时） &quot;&quot;&quot;</span>
+</span><span id="StateMachine.__init__-47"><a href="#StateMachine.__init__-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">freeze</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="StateMachine.__init__-48"><a href="#StateMachine.__init__-48"><span class="linenos">48</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 是否冻结状态机 &quot;&quot;&quot;</span>
 </span></pre></div>
 
 
@@ -285,6 +315,51 @@ def transition_state(self, from, to):
             <div class="docstring"><p>状态机的当前状态</p>
 </div>
 
+
+                            </div>
+                            <div id="StateMachine.first_tick" class="classattr">
+                                <div class="attr variable">
+            <span class="name">first_tick</span>
+
+        
+    </div>
+    <a class="headerlink" href="#StateMachine.first_tick"></a>
+    
+            <div class="docstring"><p>是否是第一帧（刚初始化StateMachine时）</p>
+</div>
+
+
+                            </div>
+                            <div id="StateMachine.freeze" class="classattr">
+                                <div class="attr variable">
+            <span class="name">freeze</span>
+
+        
+    </div>
+    <a class="headerlink" href="#StateMachine.freeze"></a>
+    
+            <div class="docstring"><p>是否冻结状态机</p>
+</div>
+
+
+                            </div>
+                            <div id="StateMachine.t_info" class="classattr">
+                                        <input id="StateMachine.t_info-view-source" class="view-source-toggle-state" type="checkbox" aria-hidden="true" tabindex="-1">
+<div class="attr function">
+            
+        <span class="def">def</span>
+        <span class="name">t_info</span><span class="signature pdoc-code condensed">(<span class="param"><span class="bp">self</span>, </span><span class="param"><span class="n">from_state</span>, </span><span class="param"><span class="n">to_state</span></span><span class="return-annotation">) -> <span class="kc">None</span>:</span></span>
+
+                <label class="view-source-button" for="StateMachine.t_info-view-source"><span>View Source</span></label>
+
+    </div>
+    <a class="headerlink" href="#StateMachine.t_info"></a>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="StateMachine.t_info-73"><a href="#StateMachine.t_info-73"><span class="linenos">73</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">t_info</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_state</span><span class="p">,</span> <span class="n">to_state</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="StateMachine.t_info-74"><a href="#StateMachine.t_info-74"><span class="linenos">74</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">rbprint</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">from_state</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">from_state</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="ow">not</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;START&#39;</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">to_state</span><span class="si">}</span><span class="s2"> from:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
+</span></pre></div>
+
+
+    
 
                             </div>
                             <div class="inherited">

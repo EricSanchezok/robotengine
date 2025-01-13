@@ -41,13 +41,19 @@ class StateMachine(Node):
         """ 当前状态持续的时间 """
         self.current_state = initial_state
         """ 状态机的当前状态 """
-        self._first = True
+        self.first_tick = True
+        """ 是否是第一帧（刚初始化StateMachine时） """
+        self.freeze = False
+        """ 是否冻结状态机 """
          
     def _process(self, delta: float) -> None:
+        if self.freeze:
+            return
+        
         start_transition_time = time.time()
         while True:
-            if self._first:
-                self._first = False
+            if self.first_tick:
+                self.first_tick = False
                 self.owner.transition_state(None, self.current_state)
 
             next = self.owner.get_next_state(self.current_state)
@@ -62,3 +68,6 @@ class StateMachine(Node):
 
         self.owner.tick(self.current_state, delta)
         self.state_time += delta
+
+    def t_info(self, from_state, to_state) -> None:
+        self.rbprint(f"{from_state if from_state is not None else 'START'} -> {to_state} from:{self.name} ")

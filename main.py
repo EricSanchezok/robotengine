@@ -6,7 +6,7 @@ from robot import Robot
 if __name__ == '__main__':
     root = Node("Root")
     
-    robot = Robot(warn=True)
+    robot = Robot(warn=False)
     root.add_child(robot)
 
     root.print_tree()

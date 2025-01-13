@@ -15,6 +15,7 @@ from robotengine.node import ProcessMode
 from robotengine.tools import warning, error, info
 from robotengine.signal import Signal
 import multiprocessing
+from typing import List, Tuple
 
 class InputDevice(Enum):
     """ 输入设备枚举 """
@@ -29,7 +30,7 @@ class InputDevice(Enum):
 class Engine:
     """ 引擎类 """
     from robotengine.node import Node
-    def __init__(self, root: Node, frequency: float=180, input_devices: InputDevice=[]):
+    def __init__(self, root: Node, frequency: float=180, input_devices: List[InputDevice]=[]):
         """
         初始化引擎
 
@@ -125,7 +126,7 @@ class Engine:
         while not self._shutdown.is_set():
             if self._gamepad_listener:
                 for _gamepad_event in self._gamepad_listener.listen():
-                    self.input.update(_gamepad_event)
+                    self.input._update(_gamepad_event)
                     input_recursive(self.root, _gamepad_event)
 
     def run(self):

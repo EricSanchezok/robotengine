@@ -5,11 +5,11 @@ from robotengine import SerialIO, DeviceType, CheckSumType
 from robotengine import Engine
 from robotengine import Timer
 from robotengine import InputEvent
-from robotengine import HoLink, HoState, HoMode, AlignState
+from robotengine import HoLink, HoState, HoMode, AlignState, HoManual
 
 class State(Enum):
     IDLE = 0
-    THINKING = 1
+    MANUAL = 1
 
 class Robot(Node):
     def __init__(self, name="Robot", warn=True):
@@ -21,45 +21,54 @@ class Robot(Node):
         self.robotlink = HoLink(url=url, warn=warn)
         self.add_child(self.robotlink)
 
-        self.robotlink.robot_state_update.connect(self._on_robot_state_update)
+        self.ho_manual = HoManual(self.robotlink)
+        self.add_child(self.ho_manual)
 
     def _ready(self) -> None:
         pass
 
     def _input(self, event: InputEvent) -> None:
+        if self.ho_manual.is_running():
+            return
+        
         if event.is_action_pressed("BACK"):
             self.engine.exit()
 
-    def _on_robot_state_update(self, robot_state: HoState) -> None:
-        pass
-        # self.rbprint("")
-        # self.robotlink.update(2, HoMode.V, 0.8, -360.0, 0.0)
-        # self.robotlink.update(3, HoMode.V, 0.8, 360.0, 0.0)
-
-    def tick(self, state: State, delta: float) -> None:    
-        # for i in range(1, 9):
-        #     self.robotlink.update(i, HoMode.S, 0.0, 0.0, 0.0)
-
+    def tick(self, state: State, delta: float) -> None:  
         if state == State.IDLE:
             pass
 
-        elif state == State.THINKING:
+        elif state == State.MANUAL:
             pass
 
     def get_next_state(self, state: State) -> State:
         if state == State.IDLE:
-            if self.state_machine.state_time >= 999.0:
-                return State.THINKING
+            if self.input.is_action_pressed("A") and self.input.is_action_pressed("Y"):
+                self.input.flush_action("A")
+                self.input.flush_action("Y")
+                return State.MANUAL
 
-        elif state == State.THINKING:
-            if self.state_machine.state_time >= 3.0:
+        elif state == State.MANUAL:
+            if self.input.is_action_pressed("A") and self.input.is_action_pressed("Y"):
+                self.input.flush_action("A")
+                self.input.flush_action("Y")
                 return State.IDLE
         
         return StateMachine.KEEP_CURRENT
 
     def transition_state(self, from_state: State, to_state: State) -> None:
-        print(f"[{self.engine.get_frame()}] {from_state if from_state is not None else 'START'} -> {to_state}")
+        self.state_machine.t_info(from_state, to_state)
 
+        if from_state == State.IDLE:
+            pass
+        elif from_state == State.MANUAL:
+            self.ho_manual.exit()
+
+
+        if to_state == State.IDLE:
+            pass
+        elif to_state == State.MANUAL:
+            self.ho_manual.enter()
 
 if __name__ == '__main__':
     root = Node("Root")

@@ -5,6 +5,7 @@ setup.py
 robotengine/__init__.py
 robotengine/cli.py
 robotengine/engine.py
+robotengine/example.py
 robotengine/help_server.py
 robotengine/ho_robot.py
 robotengine/input.py
@@ -24,6 +25,7 @@ robotengine/docs/index.html
 robotengine/docs/robotengine.html
 robotengine/docs/search.js
 robotengine/docs/robotengine/engine.html
+robotengine/docs/robotengine/example.html
 robotengine/docs/robotengine/ho_robot.html
 robotengine/docs/robotengine/input.html
 robotengine/docs/robotengine/node.html

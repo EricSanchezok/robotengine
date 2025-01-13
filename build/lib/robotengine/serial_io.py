@@ -83,11 +83,16 @@ class SerialIO(Node):
     def _initialize(self):
         self._device = self._find_device()
         if self._device:
-            info(f"节点 {self.name} 初始化时检测到 {self._device_type} 设备，串口为 {self._device}，波特率为 {self._baudrate}")
-            self._serial = serial.Serial(self._device, self._baudrate, timeout=self._timeout)
-            # 清空串口缓冲区
-            self._serial.reset_input_buffer()
-            self._serial.reset_output_buffer()
+            try:
+                info(f"节点 {self.name} 初始化时检测到 {self._device_type} 设备，串口为 {self._device}，波特率为 {self._baudrate}")
+                self._serial = serial.Serial(self._device, self._baudrate, timeout=self._timeout)
+                # 清空串口缓冲区
+                self._serial.reset_input_buffer()
+                self._serial.reset_output_buffer()
+            except serial.SerialException as e:
+                error(f"节点 {self.name} 尝试打开串口 {self._device} 失败，错误信息为 {e}")
+                self._device = None
+                self._serial = None
 
     def _find_device(self):
         if self._device_type == DeviceType.STM32F407:

@@ -83,6 +83,15 @@ JOY_MAPPING = {
     "DPAD_X": JoyAxis.JOY_AXIS_DPAD_X,
     "DPAD_Y": JoyAxis.JOY_AXIS_DPAD_Y
 }
+""" 
+手柄按键映射
+
+这个表中的键值对表示了手柄按键和 JoyButton 与 JoyAxis 之间的映射关系。
+
+键值对的键表示手柄按键的名称，值表示手柄按键的枚举值。
+
+例如，"A" 键表示手柄的 A 按钮，其值为 JoyButton.JOY_BUTTON_A。
+"""
 
 
 INPUTS_BUTTON_MAPPING = {
@@ -211,6 +220,28 @@ class GamepadListener():
                 yield input_event
 
 class Input:
+    """
+    输入类，每个 Node 节点都可以使用 self.input 来获取 Input 对象。
+
+    输入类的使用方法：
+
+        # 获取输入对象
+        input = self.input
+
+        # 检查某个动作是否被按下
+        if input.is_action_pressed("A"):
+            print("A 键被按下")
+
+        # 检查某个动作的强度
+        print(input.get_action_strength("LEFT_X"))
+
+    Input 与 _input 的用法有所不同
+
+    Input 在检测按键是否按下时，如果此时函数连续被调用，则会连续返回 True，直到按键被释放。
+
+    而 _input 则类似于中断，当按键被按下后，只会在 _input 事件中检测到一次。
+
+    """
     def __init__(self):
         self._button_states = {
             'A': False,
@@ -236,18 +267,17 @@ class Input:
             'DPAD_Y': 0.0
         }
 
-
-    def get_key_from_value(self, mapping, value):
+    def _get_key_from_value(self, mapping, value):
         for key, val in mapping.items():
             if val == value:
                 return key
         return None
 
-    def update(self, event: InputEvent):
+    def _update(self, event: InputEvent):
         if isinstance(event, InputEventJoypadButton):
-            self._button_states[self.get_key_from_value(JOY_MAPPING, event.button_index)] = event.pressed
+            self._button_states[self._get_key_from_value(JOY_MAPPING, event.button_index)] = event.pressed
         elif isinstance(event, InputEventJoypadAxis):
-            self._axis_states[self.get_key_from_value(JOY_MAPPING, event.axis)] = event.axis_value
+            self._axis_states[self._get_key_from_value(JOY_MAPPING, event.axis)] = event.axis_value
 
     def get_axis(self, negative_action: str, positive_action: str) -> float:
         if negative_action not in self.axis_states or positive_action not in self.axis_states:
@@ -257,23 +287,29 @@ class Input:
 
         return positive - negative
     
-    def get_action_strength(self, action: str) -> bool:
+    def get_action_strength(self, action: str) -> float:
         if action in self._axis_states:
             return self._axis_states[action]
         else:
-            raise ValueError(f"无效的动作: {action}")
+            return 0.0
     
     def is_action_pressed(self, action: str) -> bool:
         if action in self._button_states:
             return self._button_states[action]
         else:
-            raise ValueError(f"无效的动作: {action}")
+            return False
         
     def is_action_released(self, action: str) -> bool:
         if action in self._button_states:
             return not self._button_states[action]
         else:
-            raise ValueError(f"无效的动作: {action}")
+            return False
+        
+    def flush_action(self, action: str) -> None:
+        if action in self._button_states:
+            self._button_states[action] = False
+        elif action in self._axis_states:
+            self._axis_states[action] = 0.0
     
     def is_anything_pressed(self) -> bool:
         for value in self._button_states.values():

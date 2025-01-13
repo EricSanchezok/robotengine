@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="robotengine",
-    version="0.18",
+    version="0.24",
     packages=find_packages(),  # 自动发现所有的包和子包
     include_package_data=True,  # 确保 MANIFEST.in 中指定的文件会被打包
     install_requires=[
@@ -10,6 +10,8 @@ setup(
         "inputs>=0.5",
         "requests>=2.32.3",
         "aiohttp>=3.10.11",
+        "fastapi>=0.115.6",
+        "uvicorn>=0.33.0"
     ],
     entry_points={
         "console_scripts": [
