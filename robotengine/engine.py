@@ -45,6 +45,8 @@ class Engine:
 
         self._frequency = frequency
         self._frame = 0
+        self._start_timestamp = 0
+        self._timestamp = 0
         self._time_frequency = 30
 
         self.input = Input()
@@ -54,8 +56,6 @@ class Engine:
         """ 退出信号，当引擎退出时触发 """
 
         self._initialize()
-
-        self._start_timestamp = 0
 
         self._threads = []
         self._shutdown = threading.Event()
@@ -206,9 +206,10 @@ class Engine:
 
             if frequency == -1:
                 if not first_frame and process_func:
-                    process_func(delta)
                     if main_loop:
                         self._frame += 1
+                        self._timestamp = time.perf_counter_ns() - self._start_timestamp
+                    process_func(delta)
                 else:
                     first_frame = False
 
@@ -251,7 +252,7 @@ class Engine:
         """ 
         获取当前时间戳，单位为微秒 
         """
-        return time.perf_counter_ns() - self._start_timestamp
+        return self._timestamp
     
     def __del__(self):
         self.exit()

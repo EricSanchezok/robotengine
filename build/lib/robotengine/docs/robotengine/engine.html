@@ -155,17 +155,17 @@
 </span><span id="L-45"><a href="#L-45"><span class="linenos"> 45</span></a>
 </span><span id="L-46"><a href="#L-46"><span class="linenos"> 46</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_frequency</span> <span class="o">=</span> <span class="n">frequency</span>
 </span><span id="L-47"><a href="#L-47"><span class="linenos"> 47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_frequency</span> <span class="o">=</span> <span class="mi">30</span>
-</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>
-</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
-</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 &quot;&quot;&quot;</span>
-</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>
-</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">engine_exit</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
-</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 退出信号，当引擎退出时触发 &quot;&quot;&quot;</span>
-</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>
-</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+</span><span id="L-48"><a href="#L-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-49"><a href="#L-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-50"><a href="#L-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_frequency</span> <span class="o">=</span> <span class="mi">30</span>
+</span><span id="L-51"><a href="#L-51"><span class="linenos"> 51</span></a>
+</span><span id="L-52"><a href="#L-52"><span class="linenos"> 52</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
+</span><span id="L-53"><a href="#L-53"><span class="linenos"> 53</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 &quot;&quot;&quot;</span>
+</span><span id="L-54"><a href="#L-54"><span class="linenos"> 54</span></a>
+</span><span id="L-55"><a href="#L-55"><span class="linenos"> 55</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">engine_exit</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+</span><span id="L-56"><a href="#L-56"><span class="linenos"> 56</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 退出信号，当引擎退出时触发 &quot;&quot;&quot;</span>
 </span><span id="L-57"><a href="#L-57"><span class="linenos"> 57</span></a>
-</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="L-58"><a href="#L-58"><span class="linenos"> 58</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
 </span><span id="L-59"><a href="#L-59"><span class="linenos"> 59</span></a>
 </span><span id="L-60"><a href="#L-60"><span class="linenos"> 60</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="L-61"><a href="#L-61"><span class="linenos"> 61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -316,55 +316,56 @@
 </span><span id="L-206"><a href="#L-206"><span class="linenos">206</span></a>
 </span><span id="L-207"><a href="#L-207"><span class="linenos">207</span></a>            <span class="k">if</span> <span class="n">frequency</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
 </span><span id="L-208"><a href="#L-208"><span class="linenos">208</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">first_frame</span> <span class="ow">and</span> <span class="n">process_func</span><span class="p">:</span>
-</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
-</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a>
-</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">first_frame</span> <span class="ow">and</span> <span class="n">process_func</span><span class="p">:</span>
-</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
-</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>
-</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>                <span class="k">if</span> <span class="n">frequency</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a>                    <span class="n">next_time</span> <span class="o">+=</span> <span class="n">interval</span>
-</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a>                    <span class="n">sleep_time</span> <span class="o">=</span> <span class="n">next_time</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a>
-</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a>                    <span class="k">if</span> <span class="n">precise_control</span><span class="p">:</span>
-</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
-</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span> <span class="o">-</span> <span class="n">threshold</span><span class="p">)</span>
-</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a>
-</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>                        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">next_time</span><span class="p">:</span>
-</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a>                            <span class="k">pass</span>
-</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>
-</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>                    <span class="k">else</span><span class="p">:</span>
-</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sleep_time</span><span class="p">))</span>
-</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>
-</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>                    <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a>                        <span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当前帧</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="si">}</span><span class="s2">耗时过长，超时：</span><span class="si">{</span><span class="o">-</span><span class="n">sleep_time</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
-</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>
-</span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a>        <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_do_exit</span><span class="p">()</span>
-</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a>
-</span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-</span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a><span class="sd">        获取当前帧数 </span>
-</span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span>
-</span><span id="L-249"><a href="#L-249"><span class="linenos">249</span></a>    
-</span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-</span><span id="L-252"><a href="#L-252"><span class="linenos">252</span></a><span class="sd">        获取当前时间戳，单位为微秒 </span>
-</span><span id="L-253"><a href="#L-253"><span class="linenos">253</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="L-254"><a href="#L-254"><span class="linenos">254</span></a>        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span>
-</span><span id="L-255"><a href="#L-255"><span class="linenos">255</span></a>    
-</span><span id="L-256"><a href="#L-256"><span class="linenos">256</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="L-257"><a href="#L-257"><span class="linenos">257</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span><span id="L-209"><a href="#L-209"><span class="linenos">209</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="L-210"><a href="#L-210"><span class="linenos">210</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-211"><a href="#L-211"><span class="linenos">211</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span>
+</span><span id="L-212"><a href="#L-212"><span class="linenos">212</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+</span><span id="L-213"><a href="#L-213"><span class="linenos">213</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="L-214"><a href="#L-214"><span class="linenos">214</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-215"><a href="#L-215"><span class="linenos">215</span></a>
+</span><span id="L-216"><a href="#L-216"><span class="linenos">216</span></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="L-217"><a href="#L-217"><span class="linenos">217</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">first_frame</span> <span class="ow">and</span> <span class="n">process_func</span><span class="p">:</span>
+</span><span id="L-218"><a href="#L-218"><span class="linenos">218</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+</span><span id="L-219"><a href="#L-219"><span class="linenos">219</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="L-220"><a href="#L-220"><span class="linenos">220</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="L-221"><a href="#L-221"><span class="linenos">221</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="L-222"><a href="#L-222"><span class="linenos">222</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="L-223"><a href="#L-223"><span class="linenos">223</span></a>
+</span><span id="L-224"><a href="#L-224"><span class="linenos">224</span></a>                <span class="k">if</span> <span class="n">frequency</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span id="L-225"><a href="#L-225"><span class="linenos">225</span></a>                    <span class="n">next_time</span> <span class="o">+=</span> <span class="n">interval</span>
+</span><span id="L-226"><a href="#L-226"><span class="linenos">226</span></a>                    <span class="n">sleep_time</span> <span class="o">=</span> <span class="n">next_time</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span><span id="L-227"><a href="#L-227"><span class="linenos">227</span></a>
+</span><span id="L-228"><a href="#L-228"><span class="linenos">228</span></a>                    <span class="k">if</span> <span class="n">precise_control</span><span class="p">:</span>
+</span><span id="L-229"><a href="#L-229"><span class="linenos">229</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+</span><span id="L-230"><a href="#L-230"><span class="linenos">230</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span> <span class="o">-</span> <span class="n">threshold</span><span class="p">)</span>
+</span><span id="L-231"><a href="#L-231"><span class="linenos">231</span></a>
+</span><span id="L-232"><a href="#L-232"><span class="linenos">232</span></a>                        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">next_time</span><span class="p">:</span>
+</span><span id="L-233"><a href="#L-233"><span class="linenos">233</span></a>                            <span class="k">pass</span>
+</span><span id="L-234"><a href="#L-234"><span class="linenos">234</span></a>
+</span><span id="L-235"><a href="#L-235"><span class="linenos">235</span></a>                    <span class="k">else</span><span class="p">:</span>
+</span><span id="L-236"><a href="#L-236"><span class="linenos">236</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="L-237"><a href="#L-237"><span class="linenos">237</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sleep_time</span><span class="p">))</span>
+</span><span id="L-238"><a href="#L-238"><span class="linenos">238</span></a>
+</span><span id="L-239"><a href="#L-239"><span class="linenos">239</span></a>                    <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="L-240"><a href="#L-240"><span class="linenos">240</span></a>                        <span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当前帧</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="si">}</span><span class="s2">耗时过长，超时：</span><span class="si">{</span><span class="o">-</span><span class="n">sleep_time</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+</span><span id="L-241"><a href="#L-241"><span class="linenos">241</span></a>
+</span><span id="L-242"><a href="#L-242"><span class="linenos">242</span></a>        <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="L-243"><a href="#L-243"><span class="linenos">243</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_do_exit</span><span class="p">()</span>
+</span><span id="L-244"><a href="#L-244"><span class="linenos">244</span></a>
+</span><span id="L-245"><a href="#L-245"><span class="linenos">245</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="L-246"><a href="#L-246"><span class="linenos">246</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+</span><span id="L-247"><a href="#L-247"><span class="linenos">247</span></a><span class="sd">        获取当前帧数 </span>
+</span><span id="L-248"><a href="#L-248"><span class="linenos">248</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-249"><a href="#L-249"><span class="linenos">249</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span>
+</span><span id="L-250"><a href="#L-250"><span class="linenos">250</span></a>    
+</span><span id="L-251"><a href="#L-251"><span class="linenos">251</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="L-252"><a href="#L-252"><span class="linenos">252</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+</span><span id="L-253"><a href="#L-253"><span class="linenos">253</span></a><span class="sd">        获取当前时间戳，单位为微秒 </span>
+</span><span id="L-254"><a href="#L-254"><span class="linenos">254</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="L-255"><a href="#L-255"><span class="linenos">255</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span>
+</span><span id="L-256"><a href="#L-256"><span class="linenos">256</span></a>    
+</span><span id="L-257"><a href="#L-257"><span class="linenos">257</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="L-258"><a href="#L-258"><span class="linenos">258</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -477,17 +478,17 @@
 </span><span id="Engine-46"><a href="#Engine-46"><span class="linenos"> 46</span></a>
 </span><span id="Engine-47"><a href="#Engine-47"><span class="linenos"> 47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_frequency</span> <span class="o">=</span> <span class="n">frequency</span>
 </span><span id="Engine-48"><a href="#Engine-48"><span class="linenos"> 48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="Engine-49"><a href="#Engine-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_frequency</span> <span class="o">=</span> <span class="mi">30</span>
-</span><span id="Engine-50"><a href="#Engine-50"><span class="linenos"> 50</span></a>
-</span><span id="Engine-51"><a href="#Engine-51"><span class="linenos"> 51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
-</span><span id="Engine-52"><a href="#Engine-52"><span class="linenos"> 52</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 &quot;&quot;&quot;</span>
-</span><span id="Engine-53"><a href="#Engine-53"><span class="linenos"> 53</span></a>
-</span><span id="Engine-54"><a href="#Engine-54"><span class="linenos"> 54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">engine_exit</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
-</span><span id="Engine-55"><a href="#Engine-55"><span class="linenos"> 55</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 退出信号，当引擎退出时触发 &quot;&quot;&quot;</span>
-</span><span id="Engine-56"><a href="#Engine-56"><span class="linenos"> 56</span></a>
-</span><span id="Engine-57"><a href="#Engine-57"><span class="linenos"> 57</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+</span><span id="Engine-49"><a href="#Engine-49"><span class="linenos"> 49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Engine-50"><a href="#Engine-50"><span class="linenos"> 50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Engine-51"><a href="#Engine-51"><span class="linenos"> 51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_frequency</span> <span class="o">=</span> <span class="mi">30</span>
+</span><span id="Engine-52"><a href="#Engine-52"><span class="linenos"> 52</span></a>
+</span><span id="Engine-53"><a href="#Engine-53"><span class="linenos"> 53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
+</span><span id="Engine-54"><a href="#Engine-54"><span class="linenos"> 54</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 &quot;&quot;&quot;</span>
+</span><span id="Engine-55"><a href="#Engine-55"><span class="linenos"> 55</span></a>
+</span><span id="Engine-56"><a href="#Engine-56"><span class="linenos"> 56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">engine_exit</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+</span><span id="Engine-57"><a href="#Engine-57"><span class="linenos"> 57</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 退出信号，当引擎退出时触发 &quot;&quot;&quot;</span>
 </span><span id="Engine-58"><a href="#Engine-58"><span class="linenos"> 58</span></a>
-</span><span id="Engine-59"><a href="#Engine-59"><span class="linenos"> 59</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Engine-59"><a href="#Engine-59"><span class="linenos"> 59</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
 </span><span id="Engine-60"><a href="#Engine-60"><span class="linenos"> 60</span></a>
 </span><span id="Engine-61"><a href="#Engine-61"><span class="linenos"> 61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="Engine-62"><a href="#Engine-62"><span class="linenos"> 62</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -638,55 +639,56 @@
 </span><span id="Engine-207"><a href="#Engine-207"><span class="linenos">207</span></a>
 </span><span id="Engine-208"><a href="#Engine-208"><span class="linenos">208</span></a>            <span class="k">if</span> <span class="n">frequency</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
 </span><span id="Engine-209"><a href="#Engine-209"><span class="linenos">209</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">first_frame</span> <span class="ow">and</span> <span class="n">process_func</span><span class="p">:</span>
-</span><span id="Engine-210"><a href="#Engine-210"><span class="linenos">210</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
-</span><span id="Engine-211"><a href="#Engine-211"><span class="linenos">211</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="Engine-212"><a href="#Engine-212"><span class="linenos">212</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="Engine-213"><a href="#Engine-213"><span class="linenos">213</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="Engine-214"><a href="#Engine-214"><span class="linenos">214</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="Engine-215"><a href="#Engine-215"><span class="linenos">215</span></a>
-</span><span id="Engine-216"><a href="#Engine-216"><span class="linenos">216</span></a>            <span class="k">else</span><span class="p">:</span>
-</span><span id="Engine-217"><a href="#Engine-217"><span class="linenos">217</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">first_frame</span> <span class="ow">and</span> <span class="n">process_func</span><span class="p">:</span>
-</span><span id="Engine-218"><a href="#Engine-218"><span class="linenos">218</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
-</span><span id="Engine-219"><a href="#Engine-219"><span class="linenos">219</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="Engine-220"><a href="#Engine-220"><span class="linenos">220</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="Engine-221"><a href="#Engine-221"><span class="linenos">221</span></a>                <span class="k">else</span><span class="p">:</span>
-</span><span id="Engine-222"><a href="#Engine-222"><span class="linenos">222</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="Engine-223"><a href="#Engine-223"><span class="linenos">223</span></a>
-</span><span id="Engine-224"><a href="#Engine-224"><span class="linenos">224</span></a>                <span class="k">if</span> <span class="n">frequency</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-</span><span id="Engine-225"><a href="#Engine-225"><span class="linenos">225</span></a>                    <span class="n">next_time</span> <span class="o">+=</span> <span class="n">interval</span>
-</span><span id="Engine-226"><a href="#Engine-226"><span class="linenos">226</span></a>                    <span class="n">sleep_time</span> <span class="o">=</span> <span class="n">next_time</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
-</span><span id="Engine-227"><a href="#Engine-227"><span class="linenos">227</span></a>
-</span><span id="Engine-228"><a href="#Engine-228"><span class="linenos">228</span></a>                    <span class="k">if</span> <span class="n">precise_control</span><span class="p">:</span>
-</span><span id="Engine-229"><a href="#Engine-229"><span class="linenos">229</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
-</span><span id="Engine-230"><a href="#Engine-230"><span class="linenos">230</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span> <span class="o">-</span> <span class="n">threshold</span><span class="p">)</span>
-</span><span id="Engine-231"><a href="#Engine-231"><span class="linenos">231</span></a>
-</span><span id="Engine-232"><a href="#Engine-232"><span class="linenos">232</span></a>                        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">next_time</span><span class="p">:</span>
-</span><span id="Engine-233"><a href="#Engine-233"><span class="linenos">233</span></a>                            <span class="k">pass</span>
-</span><span id="Engine-234"><a href="#Engine-234"><span class="linenos">234</span></a>
-</span><span id="Engine-235"><a href="#Engine-235"><span class="linenos">235</span></a>                    <span class="k">else</span><span class="p">:</span>
-</span><span id="Engine-236"><a href="#Engine-236"><span class="linenos">236</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-</span><span id="Engine-237"><a href="#Engine-237"><span class="linenos">237</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sleep_time</span><span class="p">))</span>
-</span><span id="Engine-238"><a href="#Engine-238"><span class="linenos">238</span></a>
-</span><span id="Engine-239"><a href="#Engine-239"><span class="linenos">239</span></a>                    <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="Engine-240"><a href="#Engine-240"><span class="linenos">240</span></a>                        <span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当前帧</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="si">}</span><span class="s2">耗时过长，超时：</span><span class="si">{</span><span class="o">-</span><span class="n">sleep_time</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
-</span><span id="Engine-241"><a href="#Engine-241"><span class="linenos">241</span></a>
-</span><span id="Engine-242"><a href="#Engine-242"><span class="linenos">242</span></a>        <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
-</span><span id="Engine-243"><a href="#Engine-243"><span class="linenos">243</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_do_exit</span><span class="p">()</span>
-</span><span id="Engine-244"><a href="#Engine-244"><span class="linenos">244</span></a>
-</span><span id="Engine-245"><a href="#Engine-245"><span class="linenos">245</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="Engine-246"><a href="#Engine-246"><span class="linenos">246</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-</span><span id="Engine-247"><a href="#Engine-247"><span class="linenos">247</span></a><span class="sd">        获取当前帧数 </span>
-</span><span id="Engine-248"><a href="#Engine-248"><span class="linenos">248</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Engine-249"><a href="#Engine-249"><span class="linenos">249</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span>
-</span><span id="Engine-250"><a href="#Engine-250"><span class="linenos">250</span></a>    
-</span><span id="Engine-251"><a href="#Engine-251"><span class="linenos">251</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="Engine-252"><a href="#Engine-252"><span class="linenos">252</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-</span><span id="Engine-253"><a href="#Engine-253"><span class="linenos">253</span></a><span class="sd">        获取当前时间戳，单位为微秒 </span>
-</span><span id="Engine-254"><a href="#Engine-254"><span class="linenos">254</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Engine-255"><a href="#Engine-255"><span class="linenos">255</span></a>        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span>
-</span><span id="Engine-256"><a href="#Engine-256"><span class="linenos">256</span></a>    
-</span><span id="Engine-257"><a href="#Engine-257"><span class="linenos">257</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-</span><span id="Engine-258"><a href="#Engine-258"><span class="linenos">258</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span><span id="Engine-210"><a href="#Engine-210"><span class="linenos">210</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="Engine-211"><a href="#Engine-211"><span class="linenos">211</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="Engine-212"><a href="#Engine-212"><span class="linenos">212</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span>
+</span><span id="Engine-213"><a href="#Engine-213"><span class="linenos">213</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+</span><span id="Engine-214"><a href="#Engine-214"><span class="linenos">214</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="Engine-215"><a href="#Engine-215"><span class="linenos">215</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="Engine-216"><a href="#Engine-216"><span class="linenos">216</span></a>
+</span><span id="Engine-217"><a href="#Engine-217"><span class="linenos">217</span></a>            <span class="k">else</span><span class="p">:</span>
+</span><span id="Engine-218"><a href="#Engine-218"><span class="linenos">218</span></a>                <span class="k">if</span> <span class="ow">not</span> <span class="n">first_frame</span> <span class="ow">and</span> <span class="n">process_func</span><span class="p">:</span>
+</span><span id="Engine-219"><a href="#Engine-219"><span class="linenos">219</span></a>                    <span class="n">process_func</span><span class="p">(</span><span class="n">delta</span><span class="p">)</span>
+</span><span id="Engine-220"><a href="#Engine-220"><span class="linenos">220</span></a>                    <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="Engine-221"><a href="#Engine-221"><span class="linenos">221</span></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="Engine-222"><a href="#Engine-222"><span class="linenos">222</span></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="Engine-223"><a href="#Engine-223"><span class="linenos">223</span></a>                    <span class="n">first_frame</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="Engine-224"><a href="#Engine-224"><span class="linenos">224</span></a>
+</span><span id="Engine-225"><a href="#Engine-225"><span class="linenos">225</span></a>                <span class="k">if</span> <span class="n">frequency</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+</span><span id="Engine-226"><a href="#Engine-226"><span class="linenos">226</span></a>                    <span class="n">next_time</span> <span class="o">+=</span> <span class="n">interval</span>
+</span><span id="Engine-227"><a href="#Engine-227"><span class="linenos">227</span></a>                    <span class="n">sleep_time</span> <span class="o">=</span> <span class="n">next_time</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span>
+</span><span id="Engine-228"><a href="#Engine-228"><span class="linenos">228</span></a>
+</span><span id="Engine-229"><a href="#Engine-229"><span class="linenos">229</span></a>                    <span class="k">if</span> <span class="n">precise_control</span><span class="p">:</span>
+</span><span id="Engine-230"><a href="#Engine-230"><span class="linenos">230</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">:</span>
+</span><span id="Engine-231"><a href="#Engine-231"><span class="linenos">231</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">sleep_time</span> <span class="o">-</span> <span class="n">threshold</span><span class="p">)</span>
+</span><span id="Engine-232"><a href="#Engine-232"><span class="linenos">232</span></a>
+</span><span id="Engine-233"><a href="#Engine-233"><span class="linenos">233</span></a>                        <span class="k">while</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">next_time</span><span class="p">:</span>
+</span><span id="Engine-234"><a href="#Engine-234"><span class="linenos">234</span></a>                            <span class="k">pass</span>
+</span><span id="Engine-235"><a href="#Engine-235"><span class="linenos">235</span></a>
+</span><span id="Engine-236"><a href="#Engine-236"><span class="linenos">236</span></a>                    <span class="k">else</span><span class="p">:</span>
+</span><span id="Engine-237"><a href="#Engine-237"><span class="linenos">237</span></a>                        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="Engine-238"><a href="#Engine-238"><span class="linenos">238</span></a>                            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">sleep_time</span><span class="p">))</span>
+</span><span id="Engine-239"><a href="#Engine-239"><span class="linenos">239</span></a>
+</span><span id="Engine-240"><a href="#Engine-240"><span class="linenos">240</span></a>                    <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="Engine-241"><a href="#Engine-241"><span class="linenos">241</span></a>                        <span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;当前帧</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_frame</span><span class="si">}</span><span class="s2">耗时过长，超时：</span><span class="si">{</span><span class="o">-</span><span class="n">sleep_time</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">ms&quot;</span><span class="p">)</span>
+</span><span id="Engine-242"><a href="#Engine-242"><span class="linenos">242</span></a>
+</span><span id="Engine-243"><a href="#Engine-243"><span class="linenos">243</span></a>        <span class="k">if</span> <span class="n">main_loop</span><span class="p">:</span>
+</span><span id="Engine-244"><a href="#Engine-244"><span class="linenos">244</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_do_exit</span><span class="p">()</span>
+</span><span id="Engine-245"><a href="#Engine-245"><span class="linenos">245</span></a>
+</span><span id="Engine-246"><a href="#Engine-246"><span class="linenos">246</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Engine-247"><a href="#Engine-247"><span class="linenos">247</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+</span><span id="Engine-248"><a href="#Engine-248"><span class="linenos">248</span></a><span class="sd">        获取当前帧数 </span>
+</span><span id="Engine-249"><a href="#Engine-249"><span class="linenos">249</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Engine-250"><a href="#Engine-250"><span class="linenos">250</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span>
+</span><span id="Engine-251"><a href="#Engine-251"><span class="linenos">251</span></a>    
+</span><span id="Engine-252"><a href="#Engine-252"><span class="linenos">252</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Engine-253"><a href="#Engine-253"><span class="linenos">253</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+</span><span id="Engine-254"><a href="#Engine-254"><span class="linenos">254</span></a><span class="sd">        获取当前时间戳，单位为微秒 </span>
+</span><span id="Engine-255"><a href="#Engine-255"><span class="linenos">255</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Engine-256"><a href="#Engine-256"><span class="linenos">256</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span>
+</span><span id="Engine-257"><a href="#Engine-257"><span class="linenos">257</span></a>    
+</span><span id="Engine-258"><a href="#Engine-258"><span class="linenos">258</span></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="Engine-259"><a href="#Engine-259"><span class="linenos">259</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
 </span></pre></div>
 
 
@@ -719,17 +721,17 @@
 </span><span id="Engine.__init__-46"><a href="#Engine.__init__-46"><span class="linenos">46</span></a>
 </span><span id="Engine.__init__-47"><a href="#Engine.__init__-47"><span class="linenos">47</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_frequency</span> <span class="o">=</span> <span class="n">frequency</span>
 </span><span id="Engine.__init__-48"><a href="#Engine.__init__-48"><span class="linenos">48</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span> <span class="o">=</span> <span class="mi">0</span>
-</span><span id="Engine.__init__-49"><a href="#Engine.__init__-49"><span class="linenos">49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_frequency</span> <span class="o">=</span> <span class="mi">30</span>
-</span><span id="Engine.__init__-50"><a href="#Engine.__init__-50"><span class="linenos">50</span></a>
-</span><span id="Engine.__init__-51"><a href="#Engine.__init__-51"><span class="linenos">51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
-</span><span id="Engine.__init__-52"><a href="#Engine.__init__-52"><span class="linenos">52</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 &quot;&quot;&quot;</span>
-</span><span id="Engine.__init__-53"><a href="#Engine.__init__-53"><span class="linenos">53</span></a>
-</span><span id="Engine.__init__-54"><a href="#Engine.__init__-54"><span class="linenos">54</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">engine_exit</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
-</span><span id="Engine.__init__-55"><a href="#Engine.__init__-55"><span class="linenos">55</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 退出信号，当引擎退出时触发 &quot;&quot;&quot;</span>
-</span><span id="Engine.__init__-56"><a href="#Engine.__init__-56"><span class="linenos">56</span></a>
-</span><span id="Engine.__init__-57"><a href="#Engine.__init__-57"><span class="linenos">57</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
+</span><span id="Engine.__init__-49"><a href="#Engine.__init__-49"><span class="linenos">49</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Engine.__init__-50"><a href="#Engine.__init__-50"><span class="linenos">50</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Engine.__init__-51"><a href="#Engine.__init__-51"><span class="linenos">51</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_time_frequency</span> <span class="o">=</span> <span class="mi">30</span>
+</span><span id="Engine.__init__-52"><a href="#Engine.__init__-52"><span class="linenos">52</span></a>
+</span><span id="Engine.__init__-53"><a href="#Engine.__init__-53"><span class="linenos">53</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">()</span>
+</span><span id="Engine.__init__-54"><a href="#Engine.__init__-54"><span class="linenos">54</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 输入类， 在 Engine 初始化完成后，每个 Node 都可以通过 self.input 来访问输入类 &quot;&quot;&quot;</span>
+</span><span id="Engine.__init__-55"><a href="#Engine.__init__-55"><span class="linenos">55</span></a>
+</span><span id="Engine.__init__-56"><a href="#Engine.__init__-56"><span class="linenos">56</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">engine_exit</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">()</span>
+</span><span id="Engine.__init__-57"><a href="#Engine.__init__-57"><span class="linenos">57</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; 退出信号，当引擎退出时触发 &quot;&quot;&quot;</span>
 </span><span id="Engine.__init__-58"><a href="#Engine.__init__-58"><span class="linenos">58</span></a>
-</span><span id="Engine.__init__-59"><a href="#Engine.__init__-59"><span class="linenos">59</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="Engine.__init__-59"><a href="#Engine.__init__-59"><span class="linenos">59</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_initialize</span><span class="p">()</span>
 </span><span id="Engine.__init__-60"><a href="#Engine.__init__-60"><span class="linenos">60</span></a>
 </span><span id="Engine.__init__-61"><a href="#Engine.__init__-61"><span class="linenos">61</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_threads</span> <span class="o">=</span> <span class="p">[]</span>
 </span><span id="Engine.__init__-62"><a href="#Engine.__init__-62"><span class="linenos">62</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -908,11 +910,11 @@
 
     </div>
     <a class="headerlink" href="#Engine.get_frame"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Engine.get_frame-245"><a href="#Engine.get_frame-245"><span class="linenos">245</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-</span><span id="Engine.get_frame-246"><a href="#Engine.get_frame-246"><span class="linenos">246</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-</span><span id="Engine.get_frame-247"><a href="#Engine.get_frame-247"><span class="linenos">247</span></a><span class="sd">        获取当前帧数 </span>
-</span><span id="Engine.get_frame-248"><a href="#Engine.get_frame-248"><span class="linenos">248</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Engine.get_frame-249"><a href="#Engine.get_frame-249"><span class="linenos">249</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Engine.get_frame-246"><a href="#Engine.get_frame-246"><span class="linenos">246</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_frame</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+</span><span id="Engine.get_frame-247"><a href="#Engine.get_frame-247"><span class="linenos">247</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+</span><span id="Engine.get_frame-248"><a href="#Engine.get_frame-248"><span class="linenos">248</span></a><span class="sd">        获取当前帧数 </span>
+</span><span id="Engine.get_frame-249"><a href="#Engine.get_frame-249"><span class="linenos">249</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Engine.get_frame-250"><a href="#Engine.get_frame-250"><span class="linenos">250</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_frame</span>
 </span></pre></div>
 
 
@@ -932,11 +934,11 @@
 
     </div>
     <a class="headerlink" href="#Engine.get_timestamp"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="Engine.get_timestamp-251"><a href="#Engine.get_timestamp-251"><span class="linenos">251</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-</span><span id="Engine.get_timestamp-252"><a href="#Engine.get_timestamp-252"><span class="linenos">252</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
-</span><span id="Engine.get_timestamp-253"><a href="#Engine.get_timestamp-253"><span class="linenos">253</span></a><span class="sd">        获取当前时间戳，单位为微秒 </span>
-</span><span id="Engine.get_timestamp-254"><a href="#Engine.get_timestamp-254"><span class="linenos">254</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="Engine.get_timestamp-255"><a href="#Engine.get_timestamp-255"><span class="linenos">255</span></a>        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">perf_counter_ns</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_start_timestamp</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="Engine.get_timestamp-252"><a href="#Engine.get_timestamp-252"><span class="linenos">252</span></a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+</span><span id="Engine.get_timestamp-253"><a href="#Engine.get_timestamp-253"><span class="linenos">253</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot; </span>
+</span><span id="Engine.get_timestamp-254"><a href="#Engine.get_timestamp-254"><span class="linenos">254</span></a><span class="sd">        获取当前时间戳，单位为微秒 </span>
+</span><span id="Engine.get_timestamp-255"><a href="#Engine.get_timestamp-255"><span class="linenos">255</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="Engine.get_timestamp-256"><a href="#Engine.get_timestamp-256"><span class="linenos">256</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timestamp</span>
 </span></pre></div>
 
 
