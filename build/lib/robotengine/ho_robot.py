@@ -136,23 +136,23 @@ class HoState:
 
 class HoLink(Node):
     """ Ho 机器人链接节点 """
-    def __init__(self, name="HoLink", buffer_capacity: int=1024, url=None, warn=True) -> None:
+    def __init__(self, name="HoLink", buffer_capacity: int=1024, urls: List[str]=[], warn=True) -> None:
         """ 
         初始化 Ho 机器人链接节点 
 
             :param name: 节点名称
             :param buffer_capacity: 存储状态数据的缓冲区的容量
-            :param url: 数据发送的 url
+            :param urls: 服务地址列表
             :param read_mode: 串口读取模式
             :param warn: 是否显示警告
         """
         super().__init__(name)
         self._data_length = 84
         self._receive_data = None
-        self._url = url
+        self._urls = urls
         self._warn = warn
         
-        if self._url:
+        if self._urls:
             self._shutdown = multiprocessing.Event()
             self._pending_capacity = 256
             self._pending_requests = multiprocessing.Queue()
@@ -197,17 +197,16 @@ class HoLink(Node):
         self._pending_requests.put(ho_state)
         if self._pending_requests.qsize() > self._pending_capacity:
             if self._warn:
-                warning(f"{self.name} 向 {self._url} 发送请求时，请求队列已满，将丢弃最早的请求，可能会导致数据丢失")
+                warning(f"{self.name} 向 {self._urls} 发送请求时，请求队列已满，将丢弃最早的请求，可能会导致数据丢失")
             self._pending_requests.get()
 
     def _send_request(self, ho_state_dict: dict) -> None:
-        start_time = time.perf_counter()
+        """
+        向服务地址发送请求
+        """
         try:
-            response = requests.post(self._url, json=ho_state_dict, timeout=0.1)
-
-            end_time = time.perf_counter()
-            latency = end_time - start_time
-            # print(f"Request latency: {round(latency * 1000, 2)} ms")
+            for _url in self._urls:
+                response = requests.post(_url, json=ho_state_dict, timeout=0.1)
 
         except requests.RequestException as e:
             if self._warn:
@@ -217,7 +216,7 @@ class HoLink(Node):
                 warning(f"发生未知错误: {e}")
 
     def _http_request(self):
-        info(f"{self.name} 已开启向服务地址 {self._url} 发送数据的功能")
+        info(f"{self.name} 已开启向服务地址 {self._urls} 发送数据的功能")
         while not self._shutdown.is_set():
             if not self._pending_requests.empty():
                 ho_state = self._pending_requests.get()
@@ -257,7 +256,7 @@ class HoLink(Node):
                     self._state_buffer.pop(0)
 
                 self.ho_state_update.emit(ho_state)
-                if self._url:
+                if self._urls:
                     self._add_pending_request(ho_state)
             else:
                 if self._warn:
@@ -299,7 +298,7 @@ class HoLink(Node):
         return decoded_value / scale_factor
     
     # def _on_engine_exit(self):
-    #     if self._url:
+    #     if self._urls:
     #         self._shutdown.set()
     #         self._http_process.join()
             
@@ -314,7 +313,7 @@ class HoServer:
             :param ui: 是否启用 UI 界面。
             :param ui_frequency: UI 更新频率（Hz）。
         """
-        self._url = url
+        self._urls = url
         parsed_url = urlparse(url)
         self._host = parsed_url.hostname
         self._port = parsed_url.port
@@ -357,11 +356,11 @@ class HoServer:
         """
         获取缓冲区中最新的数据。
 
-            :return: 缓冲区中最新的数据，如果缓冲区为空，则返回 None。
+            :return: 缓冲区中最老的数据，如果缓冲区为空，则返回 None。
         """
         if not self.has_data():
             return None
-        return self._data_buffer.pop(-1)
+        return self._data_buffer.pop(0)
     
     def get_data_buffer(self) -> List[HoState]:
         """
@@ -372,6 +371,12 @@ class HoServer:
             :return: 缓冲区。
         """
         return copy.deepcopy(self._data_buffer)
+    
+    def flush(self) -> None:
+        """
+        清空缓冲区。
+        """
+        self._data_buffer.clear()
     
     def length(self) -> int:
         """

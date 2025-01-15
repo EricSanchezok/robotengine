@@ -215,9 +215,10 @@ class Engine:
 
             else:
                 if not first_frame and process_func:
-                    process_func(delta)
                     if main_loop:
                         self._frame += 1
+                        self._timestamp = time.perf_counter_ns() - self._start_timestamp
+                    process_func(delta)
                 else:
                     first_frame = False
 

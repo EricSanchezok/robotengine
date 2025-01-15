@@ -1,11 +1,9 @@
 from enum import Enum
-from robotengine import Node, ProcessMode
+from robotengine import Node
 from robotengine import StateMachine
-from robotengine import SerialIO, DeviceType, CheckSumType
 from robotengine import Engine
-from robotengine import Timer
 from robotengine import InputEvent
-from robotengine import HoLink, HoState, HoMode, AlignState, HoManual
+from robotengine import HoLink, HoManual
 
 class State(Enum):
     IDLE = 0
@@ -17,8 +15,7 @@ class Robot(Node):
         self.state_machine = StateMachine(name="StateMachine", initial_state=State.IDLE)
         self.add_child(self.state_machine)
 
-        url = 'http://127.0.0.1:7777/data'
-        self.robotlink = HoLink(url=url, warn=warn)
+        self.robotlink = HoLink(urls=['http://127.0.0.1:7777/data'], warn=warn)
         self.add_child(self.robotlink)
 
         self.ho_manual = HoManual(self.robotlink)
